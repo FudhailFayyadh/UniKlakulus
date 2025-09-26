@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UniKalkulus - Platform Pembelajaran Kalkulus</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        chtml: {
+          displayAlign: 'center',
+          displayIndent: '0em'
+        }
+      };
+    </script>
+    <meta name="description" content="Platform pembelajaran kalkulus interaktif dengan video, quiz, dan latihan soal">
+    <meta name="keywords" content="kalkulus, limit, turunan, integral, matematika">
+    <meta name="author" content="UniKalkulus Team">
+    <meta property="og:title" content="UniKalkulus - Platform Pembelajaran Kalkulus">
+    <meta property="og:description" content="Belajar kalkulus dengan cara yang interaktif dan menyenangkan">
+    <meta property="og:image" content="image.jpg">
+  </head>
+  <body>
+    <header role="banner">
+      <nav>
+        <div class="nav-container">
+          <div class="nav-brand">
+            <h1>
+              <a
+                href="#"
+                onclick="showPage('materi')"
+                style="text-decoration: none; color: inherit"
+                >📐 UniKalkulus</a
+              >
+            </h1>
+            <span class="nav-subtitle">Platform Pembelajaran Kalkulus</span>
+          </div>
+
+          <div class="nav-menu-container">
+            <ul class="nav-menu">
+              <li>
+                <a
+                  href="#"
+                  onclick="scrollToSection('limit-section')"
+                  class="nav-link"
+                >
+                  <span class="nav-icon">$\displaystyle\lim_{x \to c}$</span>
+                  <span class="nav-text">Limit</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  onclick="scrollToSection('derivative-section')"
+                  class="nav-link"
+                >
+                  <span class="nav-icon">$\frac{d}{dx}$</span>
+                  <span class="nav-text">Turunan</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  onclick="scrollToSection('integral-section')"
+                  class="nav-link"
+                >
+                  <span class="nav-icon">∫</span>
+                  <span class="nav-text">Integral</span>
+                </a>
+              </li>
+              <li>
+                <a href="#" onclick="showPage('quiz')" class="nav-link">
+                  <span class="nav-icon">🧠</span>
+                  <span class="nav-text">Quiz</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main role="main">
+      <!-- Halaman Materi -->
+      <div id="materi" class="page active">
+        <div class="container">
+          <!-- Hero Section -->
+          <section class="hero-section" aria-labelledby="hero-title">
+            <div class="hero-content">
+              <h1 id="hero-title">
+                Bersama-sama membuat pembelajaran kalkulus yang lebih baik
+              </h1>
+              <p class="hero-description">
+                Kami ingin membantu Anda memahami konsep-konsep fundamental
+                dalam kalkulus dengan cara yang interaktif, mudah dipahami, dan
+                menyenangkan untuk semua tingkat kemampuan.
+              </p>
+            </div>
+            <div class="hero-image">
+              <div>
+                <img
+                  src="image.jpg"
+                  alt="Kalkulus Mathematical Illustration"
+                  class="hero-photo"
+                />
+                <p class="hero-image-credit">
+                  Ilustrasi diambil dari
+                  <a
+                    href="https://rifqimulyawan.com/blog/pengertian-calculus/"
+                    target="_blank"
+                    >https://rifqimulyawan.com/blog/pengertian-calculus/</a
+                  >
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- Pendahuluan -->
+          <section class="intro-section">
+            <h2>Dasar Pembelajaran</h2>
+            <p class="intro-description">
+              Platform Pembelajaran Kalkulus memberikan informasi yang jelas
+              tentang konsep-konsep fundamental dalam kalkulus, sehingga
+              memberikan pemahaman yang solid untuk perjalanan pembelajaran
+              Anda.
+            </p>
+          </section>
+
+          <!-- Feature Cards Grid -->
+          <section class="features-grid">
+            <div class="feature-card">
+              <div class="feature-icon">
+                <div class="icon-chart">$\displaystyle\lim_{x \to c}$</div>
+              </div>
+              <h3>Konsep Limit</h3>
+              <p>
+                Temukan konsep fundamental yang digunakan untuk membantu Anda
+                memahami dan menguasai perhitungan limit dengan berbagai
+                pendekatan.
+              </p>
+              <button
+                class="feature-btn"
+                onclick="scrollToSection('limit-section')"
+              >
+                Pelajari lebih lanjut
+              </button>
+            </div>
+
+            <div class="feature-card highlight">
+              <div class="feature-icon">
+                <div class="icon-derivative">$\frac{d}{dx}$</div>
+              </div>
+              <h3>Turunan & Diferensiasi</h3>
+              <p>
+                Pelajari teknik-teknik diferensiasi dan aplikasinya dalam
+                berbagai konteks matematika dan kehidupan nyata.
+              </p>
+              <button
+                class="feature-btn"
+                onclick="scrollToSection('derivative-section')"
+              >
+                Pelajari lebih lanjut
+              </button>
+            </div>
+
+            <div class="feature-card">
+              <div class="feature-icon">
+                <div class="icon-integral">∫</div>
+              </div>
+              <h3>Integral & Antiturunan</h3>
+              <p>
+                Baca fitur terbaru dan praktik terbaik terkait konsep integral
+                dan penerapannya dalam menghitung luas dan volume.
+              </p>
+              <button
+                class="feature-btn"
+                onclick="scrollToSection('integral-section')"
+              >
+                Pelajari lebih lanjut
+              </button>
+            </div>
+          </section>
+
+          <!-- Detail Sections -->
+          <section id="limit-section" class="detail-section">
+            <div class="detail-card">
+              <h2>$\displaystyle\lim_{x \to c}$ Konsep Limit - Penjelasan Detail</h2>
+              <div class="detail-content">
+                <p>
+                  <strong>Pengertian:</strong> Limit menunjukkan nilai yang
+                  didekati suatu fungsi ketika variabel inputnya mendekati nilai
+                  tertentu.
+                </p>
+                <div class="example-box">
+                  <h4>Contoh Penerapan:</h4>
+                  <p>• Saat x mendekati 2: lim(x→2) (x² - 4)/(x - 2) = 4</p>
+                  <p>• Limit trigonometri: lim(x→0) sin(x)/x = 1</p>
+                  <p>• Limit tak hingga: lim(x→∞) 1/x = 0</p>
+                </div>
+                <div class="video-container">
+                  <h4>Video Pembelajaran Limit Part 1:</h4>
+                  <iframe
+                    width="560"
+                    height="315"
+                    src="https://www.youtube.com/embed/Da98JQ9EYP8"
+                    title="Pembelajaran Limit Part 1"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                  ></iframe>
+                  <p class="video-credit">
+                    Video pembelajaran dari
+                    <a
+                      href="https://www.youtube.com/@tpbsantuy"
+                      target="_blank"
+                      >TPB Santuy</a
+                    >
+                  </p>
+                </div>
+                <div class="video-container">
+                  <h4>Video Pembelajaran Limit Part 2:</h4>
+                  <iframe
+                    width="560"
+                    height="315"
+                    src="https://www.youtube.com/embed/Tyl_q08WFFs"
+                    title="Pembelajaran Limit Part 2"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                  ></iframe>
+                  <p class="video-credit">
+                    Video pembelajaran dari
+                    <a
+                      href="https://www.youtube.com/@tpbsantuy"
+                      target="_blank"
+                      >TPB Santuy</a
+                    >
+                  </p>
+                </div>
+                <div class="video-container">
+                  <h4>Video Pembelajaran Limit Part 3:</h4>
+                  <iframe
+                    width="560"
+                    height="315"
+                    src="https://www.youtube.com/embed/TzYhPTtx_Gs"
+                    title="Pembelajaran Limit Part 3"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                  ></iframe>
+                  <p class="video-credit">
+                    Video pembelajaran dari
+                    <a
+                      href="https://www.youtube.com/@tpbsantuy"
+                      target="_blank"
+                      >TPB Santuy</a
+                    >
+                  </p>
+                </div>
+                <div class="video-container">
+                  <h4>Video Pembelajaran Limit Part 4:</h4>
+                  <iframe
+                    width="560"
+                    height="315"
+                    src="https://www.youtube.com/embed/Gxa_O2IMkdA"
+                    title="Pembelajaran Limit Part 4"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                  ></iframe>
+                  <p class="video-credit">
+                    Video pembelajaran dari
+                    <a
+                      href="https://www.youtube.com/@tpbsantuy"
+                      target="_blank"
+                      >TPB Santuy</a
+                    >
+                  </p>
+                </div>
+                <div class="video-container">
+                  <h4>Video Pembelajaran Limit Part 5:</h4>
+                  <iframe
+                    width="560"
+                    height="315"
+                    src="https://www.youtube.com/embed/0mHbyUvRV3g"
+                    title="Pembelajaran Limit Part 5"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                  ></iframe>
+                  <p class="video-credit">
+                    Video pembelajaran dari
+                    <a
+                      href="https://www.youtube.com/@tpbsantuy"
+                      target="_blank"
+                      >TPB Santuy</a
+                    >
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="derivative-section" class="detail-section">
+            <div class="detail-card">
+              <h2>$\frac{d}{dx}$ Konsep Turunan - Penjelasan Detail</h2>
+              <div class="detail-content">
+                <p>
+                  <strong>Pengertian:</strong> Turunan mengukur laju perubahan
+                  suatu fungsi terhadap variabel inputnya.
+                </p>
+                <div class="example-box">
+                  <h4>Contoh Penerapan:</h4>
+                  <p>• Turunan f(x) = x³ adalah f'(x) = 3x²</p>
+                  <p>• Turunan sin(x) adalah cos(x)</p>
+                  <p>• Aturan rantai: (f∘g)'(x) = f'(g(x)) · g'(x)</p>
+                </div>
+                <div class="video-container">
+                  <h4>Video Pembelajaran Turunan Part 1:</h4>
+                  <iframe
+                    width="560"
+                    height="315"
+                    src="https://www.youtube.com/embed/InBfYmE_g_o"
+                    title="Pembelajaran Turunan Part 1"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                  ></iframe>
+                  <p class="video-credit">
+                    Video pembelajaran dari
+                    <a
+                      href="https://www.youtube.com/@tpbsantuy"
+                      target="_blank"
+                      >TPB Santuy</a
+                    >
+                  </p>
+                </div>
+                <div class="video-container">
+                  <h4>Video Pembelajaran Turunan Part 2:</h4>
+                  <iframe
+                    width="560"
+                    height="315"
+                    src="https://www.youtube.com/embed/-X0KC2r7eQ0"
+                    title="Pembelajaran Turunan Part 2"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                  ></iframe>
+                  <p class="video-credit">
+                    Video pembelajaran dari
+                    <a
+                      href="https://www.youtube.com/@tpbsantuy"
+                      target="_blank"
+                      >TPB Santuy</a
+                    >
+                  </p>
+                </div>
+                <div class="video-container">
+                  <h4>Video Pembelajaran Turunan Part 3:</h4>
+                  <iframe
+                    width="560"
+                    height="315"
+                    src="https://www.youtube.com/embed/QeR8TqIGG64"
+                    title="Pembelajaran Turunan Part 3"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                  ></iframe>
+                  <p class="video-credit">
+                    Video pembelajaran dari
+                    <a
+                      href="https://www.youtube.com/@tpbsantuy"
+                      target="_blank"
+                      >TPB Santuy</a
+                    >
+                  </p>
+                </div>
+                <div class="video-container">
+                  <h4>Video Pembelajaran Turunan Part 4:</h4>
+                  <iframe
+                    width="560"
+                    height="315"
+                    src="https://www.youtube.com/embed/JXc_CA2tuPA"
+                    title="Pembelajaran Turunan Part 4"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                  ></iframe>
+                  <p class="video-credit">
+                    Video pembelajaran dari
+                    <a
+                      href="https://www.youtube.com/@tpbsantuy"
+                      target="_blank"
+                      >TPB Santuy</a
+                    >
+                  </p>
+                </div>
+                <div class="video-container">
+                  <h4>Video Pembelajaran Turunan Part 5:</h4>
+                  <iframe
+                    width="560"
+                    height="315"
+                    src="https://www.youtube.com/embed/6idN0oRflRw"
+                    title="Pembelajaran Turunan Part 5"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                  ></iframe>
+                  <p class="video-credit">
+                    Video pembelajaran dari
+                    <a
+                      href="https://www.youtube.com/@tpbsantuy"
+                      target="_blank"
+                      >TPB Santuy</a
+                    >
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="integral-section" class="detail-section">
+            <div class="detail-card">
+              <h2>∫ Konsep Integral - Penjelasan Detail</h2>
+              <div class="detail-content">
+                <p>
+                  <strong>Pengertian:</strong> Integral adalah kebalikan dari
+                  turunan dan dapat digunakan untuk menghitung luas area di
+                  bawah kurva.
+                </p>
+                <div class="example-box">
+                  <h4>Contoh Penerapan:</h4>
+                  <p>• ∫ 2x dx = x² + C</p>
+                  <p>• ∫ sin(x) dx = -cos(x) + C</p>
+                  <p>• Integral tentu: ∫₀² x² dx = 8/3</p>
+                </div>
+                <div class="video-container">
+                  <h4>Video Pembelajaran Integral Part 1:</h4>
+                  <iframe
+                    width="560"
+                    height="315"
+                    src="https://www.youtube.com/embed/Aj3qM5UsWAM"
+                    title="Pembelajaran Integral Part 1"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                  ></iframe>
+                  <p class="video-credit">
+                    Video pembelajaran dari
+                    <a
+                      href="https://www.youtube.com/@tpbsantuy"
+                      target="_blank"
+                      >TPB Santuy</a
+                    >
+                  </p>
+                </div>
+                <div class="video-container">
+                  <h4>Video Pembelajaran Integral Part 2:</h4>
+                  <iframe
+                    width="560"
+                    height="315"
+                    src="https://www.youtube.com/embed/ZIhtM6fwoGw"
+                    title="Pembelajaran Integral Part 2"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                  ></iframe>
+                  <p class="video-credit">
+                    Video pembelajaran dari
+                    <a
+                      href="https://www.youtube.com/@tpbsantuy"
+                      target="_blank"
+                      >TPB Santuy</a
+                    >
+                  </p>
+                </div>
+                <div class="video-container">
+                  <h4>Video Pembelajaran Integral Part 3:</h4>
+                  <iframe
+                    width="560"
+                    height="315"
+                    src="https://www.youtube.com/embed/unvg41k9G0Y"
+                    title="Pembelajaran Integral Part 3"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                  ></iframe>
+                  <p class="video-credit">
+                    Video pembelajaran dari
+                    <a
+                      href="https://www.youtube.com/@tpbsantuy"
+                      target="_blank"
+                      >TPB Santuy</a
+                    >
+                  </p>
+                </div>
+                <div class="video-container">
+                  <h4>Video Pembelajaran Integral Part 4:</h4>
+                  <iframe
+                    width="560"
+                    height="315"
+                    src="https://www.youtube.com/embed/6aumweXEWRs"
+                    title="Pembelajaran Integral Part 4"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                  ></iframe>
+                  <p class="video-credit">
+                    Video pembelajaran dari
+                    <a
+                      href="https://www.youtube.com/@tpbsantuy"
+                      target="_blank"
+                      >TPB Santuy</a
+                    >
+                  </p>
+                </div>
+                <div class="video-container">
+                  <h4>Video Pembelajaran Integral Part 5:</h4>
+                  <iframe
+                    width="560"
+                    height="315"
+                    src="https://www.youtube.com/embed/RtwecqeufhU"
+                    title="Pembelajaran Integral Part 5"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                  ></iframe>
+                  <p class="video-credit">
+                    Video pembelajaran dari
+                    <a
+                      href="https://www.youtube.com/@tpbsantuy"
+                      target="_blank"
+                      >TPB Santuy</a
+                    >
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <!-- Halaman Quiz -->
+      <!-- Halaman Quiz -->
+      <div id="quiz" class="page">
+        <div class="container">
+          <div class="quiz-section">
+            <div class="quiz-header">
+              <h2>🧠 Tes Pemahaman Kalkulus</h2>
+              <div class="quiz-info">
+                <span
+                  >Pertanyaan <span id="question-number">1</span> dari
+                  <span id="total-questions">5</span></span
+                >
+                <span>Skor: <span id="score">0</span></span>
+              </div>
+            </div>
+
+            <div id="quiz-container">
+              <div class="question-card">
+                <h3 id="question-text">Memuat pertanyaan...</h3>
+                <div id="options-container" class="options-container">
+                  <!-- Options akan diisi oleh JavaScript -->
+                </div>
+                <div id="explanation-container" class="explanation-container" style="display: none;">
+                  <h4>💡 Cara Penyelesaian:</h4>
+                  <p id="explanation-text"></p>
+                </div>
+              </div>
+
+              <div class="quiz-navigation">
+                <button id="prev-btn" onclick="previousQuestion()" disabled>
+                  Sebelumnya
+                </button>
+                <button id="next-btn" onclick="nextQuestion()">
+                  Selanjutnya
+                </button>
+                <button
+                  id="submit-btn"
+                  onclick="submitQuiz()"
+                  style="display: none"
+                >
+                  Selesai
+                </button>
+              </div>
+            </div>
+
+            <div id="result-container" style="display: none">
+              <div class="result-card">
+                <h3>🎉 Quiz Selesai!</h3>
+                <div class="result-info">
+                  <p>
+                    Skor Anda: <span id="final-score">0</span> dari
+                    <span id="max-score">5</span>
+                  </p>
+                  <p>Persentase: <span id="percentage">0</span>%</p>
+                  <div id="grade" class="grade"></div>
+                </div>
+                <button onclick="restartQuiz()" class="restart-btn">
+                  Ulangi Quiz
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer role="contentinfo">
+        <p>&copy; 2025 UniKalkulus. Semua hak cipta dilindungi.</p>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
