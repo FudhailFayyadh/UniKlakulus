@@ -5,6 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>UniKalkulus - Platform Pembelajaran Kalkulus</title>
     <link rel="stylesheet" href="style.css" />
+    
+    <!-- Firebase SDKs v8 -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    
+    <!-- Firebase Configuration -->
+    <script>
+      // PASTIKAN KONFIGURASI INI BENAR
+      const firebaseConfig = {
+        apiKey: "AIzaSyD9cVHAxlUwR2ReL6eYAMy1g17CWTti68g",
+        authDomain: "unikalkulus.firebaseapp.com",
+        projectId: "unikalkulus",
+        storageBucket: "unikalkulus.firebasestorage.app",
+        messagingSenderId: "456881922457",
+        appId: "1:456881922457:web:633ba9ff3ca2463579f308",
+        measurementId: "G-JNL1VCN0YN"
+      };
+
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      
+      // Initialize Firebase services
+      const auth = firebase.auth();
+      const db = firebase.firestore();
+      
+      // Configure Google Provider
+      const googleProvider = new firebase.auth.GoogleAuthProvider();
+      googleProvider.setCustomParameters({
+        prompt: 'select_account'
+      });
+    </script>
+    
+    <!-- MathJax -->
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>
@@ -20,25 +54,84 @@
         }
       };
     </script>
-    <meta name="description" content="Platform pembelajaran kalkulus interaktif dengan video, quiz, dan latihan soal">
-    <meta name="keywords" content="kalkulus, limit, turunan, integral, matematika">
-    <meta name="author" content="UniKalkulus Team">
-    <meta property="og:title" content="UniKalkulus - Platform Pembelajaran Kalkulus">
-    <meta property="og:description" content="Belajar kalkulus dengan cara yang interaktif dan menyenangkan">
-    <meta property="og:image" content="image.jpg">
   </head>
   <body>
+    <!-- Authentication Modal -->
+    <div id="auth-modal" class="auth-modal hidden">
+      <div class="auth-modal-content">
+        <span class="close-modal" onclick="closeAuthModal()">&times;</span>
+        
+        <div id="login-form" class="auth-form">
+          <h2>🔐 Masuk ke UniKalkulus</h2>
+          <p class="auth-subtitle">Lanjutkan progress pembelajaran Anda</p>
+          
+          <button onclick="signInWithGoogle()" class="google-login-btn">
+            <span>🔍</span> Masuk dengan Google
+          </button>
+          
+          <div class="auth-divider">
+            <span>atau</span>
+          </div>
+          
+          <form onsubmit="signInWithEmail(event)">
+            <input type="email" id="login-email" placeholder="Email" required>
+            <input type="password" id="login-password" placeholder="Password" required>
+            <button type="submit" class="email-login-btn">Masuk dengan Email</button>
+          </form>
+          
+          <p class="auth-switch">
+            Belum punya akun? <a href="#" onclick="showRegisterForm()">Daftar di sini</a>
+          </p>
+        </div>
+
+        <div id="register-form" class="auth-form hidden">
+          <h2>📚 Daftar UniKalkulus</h2>
+          <p class="auth-subtitle">Mulai perjalanan belajar kalkulus Anda</p>
+          
+          <button onclick="signInWithGoogle()" class="google-login-btn">
+            <span>🔍</span> Daftar dengan Google
+          </button>
+          
+          <div class="auth-divider">
+            <span>atau</span>
+          </div>
+          
+          <form onsubmit="registerWithEmail(event)">
+            <input type="text" id="register-name" placeholder="Nama Lengkap" required>
+            <input type="email" id="register-email" placeholder="Email" required>
+            <input type="password" id="register-password" placeholder="Password (min. 6 karakter)" required minlength="6">
+            <button type="submit" class="email-login-btn">Daftar dengan Email</button>
+          </form>
+          
+          <p class="auth-switch">
+            Sudah punya akun? <a href="#" onclick="showLoginForm()">Masuk di sini</a>
+          </p>
+        </div>
+        
+        <div id="loading-auth" class="loading-spinner hidden">
+          <div class="spinner"></div>
+          <p>Memproses...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay hidden">
+      <div class="loading-content">
+        <div class="spinner"></div>
+        <p>Memuat data pengguna...</p>
+      </div>
+    </div>
+
+    <!-- Existing content here... -->
     <header role="banner">
       <nav>
         <div class="nav-container">
           <div class="nav-brand">
             <h1>
-              <a
-                href="#"
-                onclick="showPage('materi')"
-                style="text-decoration: none; color: inherit"
-                >📐 UniKalkulus</a
-              >
+              <a href="#" onclick="showPage('materi')" style="text-decoration: none; color: inherit">
+                📐 UniKalkulus
+              </a>
             </h1>
             <span class="nav-subtitle">Platform Pembelajaran Kalkulus</span>
           </div>
@@ -76,12 +169,33 @@
                 </a>
               </li>
               <li>
-                <a href="#" onclick="showPage('quiz')" class="nav-link">
+                <a href="#" onclick="showPage('quiz')" class="nav-link" id="quiz-nav-link">
                   <span class="nav-icon">🧠</span>
                   <span class="nav-text">Quiz</span>
                 </a>
               </li>
             </ul>
+            
+            <!-- Authentication Section -->
+            <div class="auth-section">
+              <button id="login-btn" onclick="showAuthModal()" class="auth-btn">
+                👤 Masuk
+              </button>
+              
+              <div id="user-profile" class="user-profile hidden">
+                <img id="user-avatar" src="" alt="User Avatar" class="user-avatar">
+                <div class="user-info">
+                  <span id="user-name">User Name</span>
+                  <div class="user-progress">
+                    <span id="progress-text">Progress: 0%</span>
+                    <div class="progress-bar">
+                      <div id="progress-fill" class="progress-fill"></div>
+                    </div>
+                  </div>
+                </div>
+                <button onclick="signOut()" class="logout-btn">Keluar</button>
+              </div>
+            </div>
           </div>
         </div>
       </nav>
@@ -617,6 +731,8 @@
         <p>&copy; 2025 UniKalkulus. Semua hak cipta dilindungi.</p>
     </footer>
 
+    <!-- Load scripts -->
+    <script src="firebase-integration.js"></script>
     <script src="script.js"></script>
   </body>
 </html>

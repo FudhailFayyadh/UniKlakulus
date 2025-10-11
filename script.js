@@ -239,6 +239,9 @@ let questionAnswered = false;
 let quizData = []; // This will hold the selected 5 random questions
 let quizInProgress = false; // New variable to track quiz state
 
+// Add quiz start time tracking
+let quizStartTime = null;
+
 // Quiz data
 const QuizData = {
   bank: allQuestions,
@@ -250,34 +253,65 @@ const QuizData = {
 
 // Fungsi untuk navigasi halaman
 function showPage(pageName) {
-  // Check if quiz is in progress and trying to navigate away from quiz
-  if (quizInProgress && pageName !== 'quiz') {
+  // Check authentication for quiz
+  if (pageName === 'quiz' && !currentUser) {
+    showAuthModal();
+    showInfoMessage('Silakan masuk terlebih dahulu untuk mengakses quiz');
+    return;
+  }
+  
+  // Hide all pages
+  const pages = document.querySelectorAll('.page');
+  pages.forEach(page => {
+    page.classList.remove('active');
+  });
+
+  // Show selected page
+  const selectedPage = document.getElementById(pageName);
+  if (selectedPage) {
+    selectedPage.classList.add('active');
+  }
+  
+  // Track section viewing for authenticated users
+  if (currentUser) {
+    trackSectionView(pageName);
+  }
+}
+
+// Modified scrollToSection function
+function scrollToSection(sectionId) {
+  // Check if quiz is in progress
+  if (quizInProgress) {
     showQuizLockNotice();
     return;
   }
 
-  // Remove active class from all nav links
-  document.querySelectorAll('.nav-link').forEach(link => {
-    link.classList.remove('active');
-  });
-
-  // Add active class to current page link
-  const currentLink = document.querySelector(`[onclick*="showPage('${pageName}')"]`);
-  if (currentLink) {
-    currentLink.classList.add('active');
-  }
-
-  // Hide all pages
-  document.querySelectorAll(".page").forEach((page) => {
-    page.classList.remove("active");
-  });
-
-  // Show selected page
-  document.getElementById(pageName).classList.add("active");
-
-  // Initialize quiz if opening quiz page
-  if (pageName === "quiz") {
-    initializeQuiz();
+  // First show the materi page if not already shown
+  showPage('materi');
+  
+  setTimeout(() => {
+    const section = document.getElementById(sectionId);
+    if (section) {
+      section.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+      
+      // Update active link
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+      });
+      
+      const currentLink = document.querySelector(`[onclick*="scrollToSection('${sectionId}')"]`);
+      if (currentLink) {
+        currentLink.classList.add('active');
+      }
+    }
+  }, 100);
+  
+  // Track section viewing for authenticated users
+  if (currentUser) {
+    trackSectionView(sectionId);
   }
 }
 
@@ -315,6 +349,7 @@ function scrollToSection(sectionId) {
 
 // Fungsi Quiz
 function initializeQuiz() {
+  quizStartTime = Date.now();
   // Select 5 random questions from the bank
   quizData = QuizData.selectRandom();
 
@@ -490,12 +525,22 @@ function previousQuestion() {
   }
 }
 
+// Modified submitQuiz function
 function submitQuiz() {
   if (!questionAnswered) {
     alert("Silakan pilih jawaban terlebih dahulu!");
     return;
   }
 
+  if (!currentUser) {
+    showAuthModal();
+    showInfoMessage('Silakan masuk terlebih dahulu');
+    return;
+  }
+
+  // Calculate time spent
+  const timeSpent = Date.now() - quizStartTime || 0;
+  
   // Score is already calculated during answer selection
   // Show results
   const percentage = Math.round((score / quizData.length) * 100);
@@ -531,8 +576,26 @@ function submitQuiz() {
   document.getElementById("result-container").style.display = "block";
 
   quizCompleted = true;
-  quizInProgress = false; // Quiz is no longer in progress
-  updateNavigationLock(false); // Remove navigation lock
+  quizInProgress = false;
+  updateNavigationLock(false);
+
+  // Track quiz attempt for authenticated users
+  if (currentUser) {
+    const quizAttemptData = {
+      score: score,
+      total: quizData.length,
+      percentage: percentage,
+      timeSpent: Math.round(timeSpent / 1000), // in seconds
+      answers: userAnswers.map((answer, index) => ({
+        questionIndex: index,
+        userAnswer: answer,
+        correctAnswer: quizData[index].correct,
+        isCorrect: answer === quizData[index].correct
+      }))
+    };
+    
+    trackQuizAttempt(quizAttemptData);
+  }
 }
 
 function restartQuiz() {
