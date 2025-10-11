@@ -1,48 +1,252 @@
-const quizData = [
+const quizBankData = [
   {
-    question: "Apa hasil dari limit berikut: $\\lim_{x \\to 2} (3x + 1)$?",
-    options: ["5", "6", "7", "8"],
-    correct: 2,
-    explanation: "Substitusikan x = 2 ke dalam fungsi: 3(2) + 1 = 6 + 1 = 7."
-  },
-  {
-    question: "Turunan dari $f(x) = x^3$ adalah:",
-    options: ["$2x^2$", "$3x^2$", "$x^2$", "$4x^3$"],
+    question: "Berapa hasil limit dari (x² - 4)/(x - 2) saat x mendekati 2?",
+    options: ["2", "4", "6", "Tak terdefinisi"],
     correct: 1,
-    explanation: "Menggunakan aturan pangkat, turunan dari $x^n$ adalah $nx^{n-1}$. Jadi, turunan dari $x^3$ adalah $3x^{3-1} = 3x^2$."
+    explanation: "Faktorkan pembilang: (x² - 4) = (x + 2)(x - 2). Sehingga (x² - 4)/(x - 2) = (x + 2)(x - 2)/(x - 2) = x + 2. Ketika x → 2, hasilnya = 2 + 2 = 4."
   },
   {
-    question: "Integral dari $\\int 2x dx$ adalah:",
-    options: ["$x^2 + C$", "$2x^2 + C$", "$x^2/2 + C$", "$2x + C$"],
-    correct: 0,
-    explanation: "Menggunakan aturan pangkat untuk integral, $\\int x^n dx = \\frac{x^{n+1}}{n+1} + C$. Jadi, $\\int 2x dx = 2 \\cdot \\frac{x^{1+1}}{1+1} + C = x^2 + C$."
-  },
-  {
-    question: "Apa definisi limit?",
+    question: "Jika f(x) = x³ + 2x² - 5x + 1, maka turunan pertamanya adalah:",
     options: [
-      "Nilai yang didekati fungsi saat x mendekati suatu titik",
-      "Nilai maksimum fungsi",
-      "Nilai minimum fungsi", 
-      "Titik potong dengan sumbu y"
+      "3x² + 4x - 5",
+      "x⁴ + 2x³ - 5x² + x",
+      "3x² + 2x - 5",
+      "3x³ + 4x² - 5x",
     ],
     correct: 0,
-    explanation: "Limit secara fundamental mendeskripsikan perilaku suatu fungsi saat inputnya mendekati nilai tertentu, bukan nilai fungsi di titik itu sendiri."
+    explanation: "Gunakan aturan pangkat: d/dx(xⁿ) = n·xⁿ⁻¹. Jadi f'(x) = 3x² + 2(2x) - 5(1) + 0 = 3x² + 4x - 5."
   },
   {
-    question: "Turunan dari $f(x) = \\sin(x)$ adalah:",
-    options: ["$-\\cos(x)$", "$\\cos(x)$", "$\\tan(x)$", "$-\\sin(x)$"],
+    question: "Hasil integral dari 2x terhadap x adalah:",
+    options: ["2 + C", "x + C", "x² + C", "2x² + C"],
+    correct: 2,
+    explanation: "Gunakan aturan integral: ∫axⁿ dx = (a/(n+1))xⁿ⁺¹ + C. Jadi ∫2x dx = ∫2x¹ dx = (2/2)x² + C = x² + C."
+  },
+  {
+    question: "Nilai dari lim(x→0) sin(x)/x adalah:",
+    options: ["0", "1", "∞", "Tidak ada"],
     correct: 1,
-    explanation: "Ini adalah salah satu aturan turunan dasar untuk fungsi trigonometri, di mana turunan dari $\\sin(x)$ adalah $\\cos(x)$."
+    explanation: "Ini adalah limit fundamental trigonometri yang standar: lim(x→0) sin(x)/x = 1. Dapat dibuktikan menggunakan teorema squeeze atau aturan L'Hôpital."
+  },
+  {
+    question: "Turunan kedua dari f(x) = x⁴ - 2x³ + x² adalah:",
+    options: ["12x² - 12x + 2", "4x³ - 6x² + 2x", "12x - 12", "x⁵ - x⁴ + x³/3"],
+    correct: 0,
+    explanation: "f'(x) = 4x³ - 6x² + 2x, kemudian f''(x) = 12x² - 12x + 2."
+  },
+  {
+    question: "Berapa hasil dari lim(x→∞) (3x² + 2x + 1)/(2x² + 5x + 3)?",
+    options: ["3/2", "2/3", "1", "∞"],
+    correct: 0,
+    explanation: "Untuk limit rasional saat x→∞, bagi pembilang dan penyebut dengan pangkat tertinggi (x²): lim(x→∞) (3 + 2/x + 1/x²)/(2 + 5/x + 3/x²) = 3/2."
+  },
+  {
+    question: "Turunan dari f(x) = e^(2x) adalah:",
+    options: ["e^(2x)", "2e^(2x)", "e^(2x) + 2", "2x·e^(2x)"],
+    correct: 1,
+    explanation: "Gunakan aturan rantai: d/dx[e^(u)] = e^(u)·u'. Di sini u = 2x, jadi u' = 2. Maka f'(x) = e^(2x)·2 = 2e^(2x)."
+  },
+  {
+    question: "Hasil integral dari cos(x) dx adalah:",
+    options: ["-cos(x) + C", "cos(x) + C", "sin(x) + C", "-sin(x) + C"],
+    correct: 2,
+    explanation: "∫cos(x) dx = sin(x) + C. Ini adalah integral dasar trigonometri yang perlu dihapal."
+  },
+  {
+    question: "Jika f(x) = ln(x), maka f'(x) adalah:",
+    options: ["1/x", "x", "ln(x)", "e^x"],
+    correct: 0,
+    explanation: "Turunan dari logaritma natural adalah: d/dx[ln(x)] = 1/x (untuk x > 0)."
+  },
+  {
+    question: "Nilai dari ∫₀^π sin(x) dx adalah:",
+    options: ["0", "1", "2", "-1"],
+    correct: 2,
+    explanation: "∫sin(x) dx = -cos(x) + C. Jadi ∫₀^π sin(x) dx = [-cos(x)]₀^π = -cos(π) - (-cos(0)) = -(-1) - (-1) = 1 + 1 = 2."
+  },
+  {
+    question:
+      "Turunan dari f(x) = x·sin(x) menggunakan aturan perkalian adalah:",
+    options: ["sin(x) + x·cos(x)", "x·cos(x)", "sin(x)", "cos(x) + x·sin(x)"],
+    correct: 0,
+    explanation: "Gunakan aturan perkalian: (u·v)' = u'·v + u·v'. Di sini u = x (u' = 1) dan v = sin(x) (v' = cos(x)). Jadi f'(x) = 1·sin(x) + x·cos(x) = sin(x) + x·cos(x)."
+  },
+  {
+    question: "Berapa hasil dari lim(x→0) (1 - cos(x))/x²?",
+    options: ["0", "1/2", "1", "∞"],
+    correct: 1,
+    explanation: "Gunakan identitas trigonometri: 1 - cos(x) = 2sin²(x/2). Maka limit menjadi lim(x→0) 2sin²(x/2)/x² = lim(x→0) 2·(sin(x/2)/(x/2))²·(1/2)² = 2·1²·(1/4) = 1/2."
+  },
+  {
+    question: "Hasil dari ∫ 1/x dx adalah:",
+    options: ["x + C", "-1/x + C", "1/x² + C", "ln|x| + C"],
+    correct: 3,
+    explanation: "∫ 1/x dx = ln|x| + C. Ini adalah integral standar yang penting untuk diingat. Nilai absolut diperlukan karena ln(x) hanya terdefinisi untuk x > 0."
+  },
+  {
+    question: "Turunan dari f(x) = tan(x) adalah:",
+    options: ["sec²(x)", "cot(x)", "sec(x)·tan(x)", "csc²(x)"],
+    correct: 0,
+    explanation: "d/dx[tan(x)] = sec²(x). Dapat diturunkan dari tan(x) = sin(x)/cos(x) menggunakan aturan pembagian."
+  },
+  {
+    question: "Nilai maksimum dari f(x) = -x² + 4x + 1 adalah:",
+    options: ["5", "4", "3", "6"],
+    correct: 0,
+    explanation: "Ini adalah parabola terbuka ke bawah. Titik maksimum di x = -b/(2a) = -4/(2(-1)) = 2. Nilai maksimum f(2) = -(2)² + 4(2) + 1 = -4 + 8 + 1 = 5."
+  },
+  {
+    question: "Hasil integral dari e^x dx adalah:",
+    options: ["e^x·x + C", "e^(x+1) + C", "x·e^x + C", "e^x + C"],
+    correct: 3,
+    explanation: "∫e^x dx = e^x + C. Fungsi eksponential e^x adalah satu-satunya fungsi yang turunannya sama dengan dirinya sendiri."
+  },
+  {
+    question: "Jika f(x) = x³, berapa laju perubahan f(x) saat x = 2?",
+    options: ["6", "8", "12", "4"],
+    correct: 2,
+    explanation: "Laju perubahan adalah turunan. f'(x) = 3x². Pada x = 2: f'(2) = 3(2)² = 3(4) = 12."
+  },
+  {
+    question: "Berapa hasil dari lim(x→1) (x³ - 1)/(x - 1)?",
+    options: ["1", "2", "3", "0"],
+    correct: 2,
+    explanation: "Faktorkan x³ - 1 = (x - 1)(x² + x + 1). Maka (x³ - 1)/(x - 1) = x² + x + 1. Ketika x → 1: 1² + 1 + 1 = 3."
+  },
+  {
+    question: "Turunan dari f(x) = √x adalah:",
+    options: ["√x/2", "1/√x", "1/(2√x)", "2√x"],
+    correct: 2,
+    explanation: "√x = x^(1/2). Gunakan aturan pangkat: d/dx[x^(1/2)] = (1/2)x^(-1/2) = 1/(2√x)."
+  },
+  {
+    question: "Hasil dari ∫₁² (2x + 1) dx adalah:",
+    options: ["6", "5", "7", "4"],
+    correct: 3,
+    explanation: "∫(2x + 1) dx = x² + x + C. Evaluasi dari 1 ke 2: [x² + x]₁² = (2² + 2) - (1² + 1) = (4 + 2) - (1 + 1) = 6 - 2 = 4."
+  },
+  {
+    question: "Nilai dari lim(x→2) (x² - 4x + 4)/(x - 2) adalah:",
+    options: ["0", "2", "4", "Tidak ada"],
+    correct: 0,
+    explanation: "Faktorkan pembilang: x² - 4x + 4 = (x - 2)². Maka limit = lim(x→2) (x - 2)²/(x - 2) = lim(x→2) (x - 2) = 2 - 2 = 0."
+  },
+  {
+    question: "Turunan dari f(x) = x²·e^x menggunakan aturan perkalian adalah:",
+    options: ["2x·e^x", "x²·e^x + 2x·e^x", "2x·e^x + x²", "x²·e^x"],
+    correct: 1,
+    explanation: "Gunakan aturan perkalian: (uv)' = u'v + uv'. Di sini u = x² (u' = 2x) dan v = e^x (v' = e^x). Jadi f'(x) = 2x·e^x + x²·e^x."
+  },
+  {
+    question: "Hasil dari ∫₀¹ x³ dx adalah:",
+    options: ["1/4", "1/3", "1/2", "1"],
+    correct: 0,
+    explanation: "∫x³ dx = x⁴/4 + C. Evaluasi dari 0 ke 1: [x⁴/4]₀¹ = 1⁴/4 - 0⁴/4 = 1/4."
+  },
+  {
+    question: "Nilai minimum dari f(x) = x² - 6x + 8 adalah:",
+    options: ["-1", "-2", "1", "2"],
+    correct: 0,
+    explanation: "Ini parabola terbuka ke atas. Minimum di x = -b/(2a) = 6/2 = 3. Nilai minimum f(3) = 3² - 6(3) + 8 = 9 - 18 + 8 = -1."
+  },
+  {
+    question: "Turunan dari f(x) = cos(2x) adalah:",
+    options: ["-sin(2x)", "-2sin(2x)", "2cos(2x)", "sin(2x)"],
+    correct: 1,
+    explanation: "Gunakan aturan rantai: d/dx[cos(u)] = -sin(u)·u'. Di sini u = 2x, jadi u' = 2. Maka f'(x) = -sin(2x)·2 = -2sin(2x)."
+  },
+  {
+    question: "Hasil dari ∫ x²·ln(x) dx menggunakan integrasi parsial adalah:",
+    options: ["(x³/3)·ln(x) - x³/9 + C", "x²·ln(x) - x + C", "(x³/3)·ln(x) + C", "x·ln(x) - x + C"],
+    correct: 0,
+    explanation: "Gunakan integrasi parsial: ∫u dv = uv - ∫v du. Pilih u = ln(x) (du = dx/x) dan dv = x² dx (v = x³/3). Hasil: (x³/3)·ln(x) - ∫(x³/3)·(1/x) dx = (x³/3)·ln(x) - x³/9 + C."
+  },
+  {
+    question: "Nilai dari lim(x→∞) (2x³ - 5x² + 1)/(x³ + 3x - 7) adalah:",
+    options: ["0", "1", "2", "∞"],
+    correct: 2,
+    explanation: "Untuk limit rasional saat x→∞, bagi dengan pangkat tertinggi (x³): lim(x→∞) (2 - 5/x + 1/x³)/(1 + 3/x² - 7/x³) = 2/1 = 2."
+  },
+  {
+    question: "Jika f(x) = x⁴ - 4x³ + 6x² - 4x + 1, maka f'(1) adalah:",
+    options: ["0", "1", "2", "4"],
+    correct: 0,
+    explanation: "f'(x) = 4x³ - 12x² + 12x - 4. Substitusi x = 1: f'(1) = 4(1)³ - 12(1)² + 12(1) - 4 = 4 - 12 + 12 - 4 = 0."
+  },
+  {
+    question: "Area di bawah kurva y = x² dari x = 0 hingga x = 3 adalah:",
+    options: ["6", "8", "9", "12"],
+    correct: 2,
+    explanation: "∫₀³ x² dx = [x³/3]₀³ = (3³/3) - (0³/3) = 27/3 = 9."
+  },
+  {
+    question: "Turunan dari f(x) = arctan(x) adalah:",
+    options: ["1/(1+x)", "1/√(1-x²)", "1/(1+x²)", "-1/(1+x²)"],
+    correct: 2,
+    explanation: "d/dx[arctan(x)] = 1/(1+x²). Ini adalah turunan standar fungsi invers trigonometri."
+  },
+  {
+    question: "Nilai dari ∫₋₁¹ x³ dx adalah:",
+    options: ["0", "1/2", "-1/2", "2"],
+    correct: 0,
+    explanation: "Karena x³ adalah fungsi ganjil dan integral dari -1 ke 1, hasilnya = 0. Dapat juga dihitung: [x⁴/4]₋₁¹ = 1/4 - 1/4 = 0."
+  },
+  {
+    question: "Titik infleksi dari f(x) = x³ - 6x² + 9x + 1 terjadi pada x =:",
+    options: ["1", "2", "3", "4"],
+    correct: 1,
+    explanation: "Titik infleksi saat f''(x) = 0. f'(x) = 3x² - 12x + 9, f''(x) = 6x - 12. Set f''(x) = 0: 6x - 12 = 0, maka x = 2."
+  },
+  {
+    question: "Hasil dari lim(x→4) (√x - 2)/(x - 4) adalah:",
+    options: ["0", "1/4", "1/2", "1"],
+    correct: 1,
+    explanation: "Rasionalisasi pembilang: (√x - 2)/(x - 4) · (√x + 2)/(√x + 2) = (x - 4)/((x - 4)(√x + 2)) = 1/(√x + 2). Ketika x → 4: 1/(2 + 2) = 1/4."
+  },
+];
+
+// Tambahan soal untuk variasi jawaban
+const additionalQuestions = [
+  {
+    question: "Turunan kedua dari f(x) = sin(x) cos(x) adalah:",
+    options: ["2cos(2x)", "-2cos(2x)", "2sin(2x)", "-2sin(2x)"],
+    correct: 1,
+    explanation: "f(x) = sin(x)cos(x) = (1/2)sin(2x). f'(x) = cos(2x), f''(x) = -2sin(2x). Namun lebih mudah: f''(x) = -2cos(2x)."
+  },
+  {
+    question: "Nilai dari ∫₀^(π/2) cos³(x) dx adalah:",
+    options: ["1/3", "2/3", "1/2", "3/4"],
+    correct: 1,
+    explanation: "Gunakan substitusi u = sin(x), du = cos(x)dx. ∫cos³(x)dx = ∫cos²(x)cos(x)dx = ∫(1-sin²(x))cos(x)dx. Hasilnya = 2/3."
+  },
+  {
+    question: "Jarak yang ditempuh benda dengan kecepatan v(t) = 3t² + 2t dari t = 1 hingga t = 3 adalah:",
+    options: ["28", "30", "32", "34"],
+    correct: 3,
+    explanation: "Jarak = ∫₁³ v(t) dt = ∫₁³ (3t² + 2t) dt = [t³ + t²]₁³ = (27 + 9) - (1 + 1) = 36 - 2 = 34."
   }
 ];
 
-let currentQuestionIndex = 0;
+// Gabungkan semua soal
+const allQuestions = [...quizBankData, ...additionalQuestions];
+
+// Variables untuk quiz
+let currentQuestion = 0;
 let score = 0;
 let userAnswers = [];
-let questionAnswered = false;
 let quizCompleted = false;
-let quizInProgress = false;
-let quizStartTime = null;
+let questionAnswered = false;
+let quizData = []; // This will hold the selected 5 random questions
+let quizInProgress = false; // New variable to track quiz state
+
+// Quiz data
+const QuizData = {
+  bank: allQuestions,
+  selectRandom: function (count = 5) {
+    const shuffled = [...this.bank].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
+  },
+};
 
 // Fungsi untuk navigasi halaman
 function showPage(pageName) {
