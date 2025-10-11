@@ -238,7 +238,6 @@ let quizCompleted = false;
 let questionAnswered = false;
 let quizData = []; // This will hold the selected 5 random questions
 let quizInProgress = false; // New variable to track quiz state
-let quizStartTime = 0; // Track quiz start time
 
 // Quiz data
 const QuizData = {
@@ -316,13 +315,6 @@ function scrollToSection(sectionId) {
 
 // Fungsi Quiz
 function initializeQuiz() {
-  // Check if user needs to login for quiz
-  if (!authManager.isAuthenticated()) {
-    authManager.showNotification('Silakan login terlebih dahulu untuk mengerjakan quiz dan menyimpan progress Anda!', 'info');
-    authManager.showLoginModal();
-    return;
-  }
-
   // Select 5 random questions from the bank
   quizData = QuizData.selectRandom();
 
@@ -332,7 +324,6 @@ function initializeQuiz() {
   quizCompleted = false;
   questionAnswered = false;
   quizInProgress = true; // Set quiz in progress
-  quizStartTime = Date.now(); // Record start time
 
   // Update navigation to show quiz is locked
   updateNavigationLock(true);
@@ -499,7 +490,7 @@ function previousQuestion() {
   }
 }
 
-async function submitQuiz() {
+function submitQuiz() {
   if (!questionAnswered) {
     alert("Silakan pilih jawaban terlebih dahulu!");
     return;
@@ -535,67 +526,6 @@ async function submitQuiz() {
   gradeElement.textContent = gradeText;
   gradeElement.className = `grade ${gradeClass}`;
 
-  // Save quiz result if user is authenticated
-  if (authManager && authManager.isAuthenticated()) {
-    try {
-      const timeSpentSeconds = Math.round((Date.now() - quizStartTime) / 1000);
-      const quizResult = {
-        topic: 'mixed', // Since this is a mixed quiz
-        score: percentage,
-        totalQuestions: quizData.length,
-        correctAnswers: score,
-        timeSpent: timeSpentSeconds,
-        answers: userAnswers.map((answerIndex, questionIndex) => {
-          const question = quizData[questionIndex];
-          return {
-            questionId: `q_${questionIndex}`,
-            questionText: question.question.substring(0, 100) + '...',
-            selectedAnswer: question.options[answerIndex] || 'No answer',
-            correctAnswer: question.options[question.correct],
-            isCorrect: answerIndex === question.correct,
-            timeSpent: 0 // Individual question time not tracked yet
-          };
-        })
-      };
-
-      const result = await authManager.saveQuizResult(quizResult);
-      if (result && result.success) {
-        // Show additional feedback for logged-in users
-        const resultInfo = document.querySelector('.result-info');
-        if (resultInfo) {
-          const feedbackDiv = document.createElement('div');
-          feedbackDiv.className = 'quiz-feedback';
-          feedbackDiv.innerHTML = `
-            <div class="feedback-grid">
-              <div class="feedback-item success">
-                <span class="feedback-icon">💾</span>
-                <span>Progress tersimpan!</span>
-              </div>
-              ${result.result.newPersonalBest ? 
-                '<div class="feedback-item achievement"><span class="feedback-icon">🏆</span><span>Skor terbaik baru!</span></div>' : 
-                ''
-              }
-              ${result.result.streak > 1 ? 
-                `<div class="feedback-item streak"><span class="feedback-icon">🔥</span><span>Streak ${result.result.streak} hari!</span></div>` : 
-                ''
-              }
-              <div class="feedback-item info">
-                <span class="feedback-icon">📊</span>
-                <span>Total quiz: ${result.result.totalQuizzesTaken}</span>
-              </div>
-            </div>
-          `;
-          resultInfo.appendChild(feedbackDiv);
-        }
-
-        authManager.showNotification('Quiz selesai! Progress berhasil disimpan.', 'success');
-      }
-    } catch (error) {
-      console.error('Failed to save quiz result:', error);
-      authManager.showNotification('Quiz selesai, tapi gagal menyimpan. Coba lagi nanti.', 'error');
-    }
-  }
-
   // Hide quiz, show results
   document.getElementById("quiz-container").style.display = "none";
   document.getElementById("result-container").style.display = "block";
@@ -624,75 +554,12 @@ function restartQuiz() {
   updateQuizDisplay();
 }
 
-// Authentication Functions
-async function handleLogin(event) {
-  event.preventDefault();
-  
-  const email = document.getElementById('login-email').value;
-  const password = document.getElementById('login-password').value;
-  
-  const result = await authManager.login(email, password);
-  
-  if (result.success) {
-    authManager.hideAuthModal();
-    authManager.showNotification('Login berhasil! Selamat datang kembali!', 'success');
-    
-    // Clear form
-    document.getElementById('login-email').value = '';
-    document.getElementById('login-password').value = '';
-  } else {
-    authManager.showNotification(result.error, 'error');
-  }
-}
-
-async function handleRegister(event) {
-  event.preventDefault();
-  
-  const name = document.getElementById('register-name').value;
-  const email = document.getElementById('register-email').value;
-  const password = document.getElementById('register-password').value;
-  
-  // Basic password validation
-  if (password.length < 6) {
-    authManager.showNotification('Password harus minimal 6 karakter', 'error');
-    return;
-  }
-  
-  if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
-    authManager.showNotification('Password harus mengandung huruf besar, kecil, dan angka', 'error');
-    return;
-  }
-  
-  const result = await authManager.register(name, email, password);
-  
-  if (result.success) {
-    authManager.hideAuthModal();
-    authManager.showNotification('Registrasi berhasil! Selamat bergabung!', 'success');
-    
-    // Clear form
-    document.getElementById('register-name').value = '';
-    document.getElementById('register-email').value = '';
-    document.getElementById('register-password').value = '';
-  } else {
-    authManager.showNotification(result.error, 'error');
-  }
-}
-
-// Progress and Profile modal functions removed for simplification
-
 // Initialize enhanced navigation
 document.addEventListener("DOMContentLoaded", function () {
   showPage("materi");
   
   // Add smooth scroll behavior to page
   document.documentElement.style.scrollBehavior = 'smooth';
-  
-  // Wait for authManager to initialize before updating UI
-  setTimeout(() => {
-    if (window.authManager) {
-      authManager.updateUI();
-    }
-  }, 100);
 });
 
 // Quiz Lock Functions
