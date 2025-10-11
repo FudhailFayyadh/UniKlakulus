@@ -2,17 +2,20 @@ const quizData = [
   {
     question: "Apa hasil dari limit berikut: $\\lim_{x \\to 2} (3x + 1)$?",
     options: ["5", "6", "7", "8"],
-    correct: 2
+    correct: 2,
+    explanation: "Substitusikan x = 2 ke dalam fungsi: 3(2) + 1 = 6 + 1 = 7."
   },
   {
     question: "Turunan dari $f(x) = x^3$ adalah:",
     options: ["$2x^2$", "$3x^2$", "$x^2$", "$4x^3$"],
-    correct: 1
+    correct: 1,
+    explanation: "Menggunakan aturan pangkat, turunan dari $x^n$ adalah $nx^{n-1}$. Jadi, turunan dari $x^3$ adalah $3x^{3-1} = 3x^2$."
   },
   {
     question: "Integral dari $\\int 2x dx$ adalah:",
     options: ["$x^2 + C$", "$2x^2 + C$", "$x^2/2 + C$", "$2x + C$"],
-    correct: 0
+    correct: 0,
+    explanation: "Menggunakan aturan pangkat untuk integral, $\\int x^n dx = \\frac{x^{n+1}}{n+1} + C$. Jadi, $\\int 2x dx = 2 \\cdot \\frac{x^{1+1}}{1+1} + C = x^2 + C$."
   },
   {
     question: "Apa definisi limit?",
@@ -22,12 +25,14 @@ const quizData = [
       "Nilai minimum fungsi", 
       "Titik potong dengan sumbu y"
     ],
-    correct: 0
+    correct: 0,
+    explanation: "Limit secara fundamental mendeskripsikan perilaku suatu fungsi saat inputnya mendekati nilai tertentu, bukan nilai fungsi di titik itu sendiri."
   },
   {
     question: "Turunan dari $f(x) = \\sin(x)$ adalah:",
     options: ["$-\\cos(x)$", "$\\cos(x)$", "$\\tan(x)$", "$-\\sin(x)$"],
-    correct: 1
+    correct: 1,
+    explanation: "Ini adalah salah satu aturan turunan dasar untuk fungsi trigonometri, di mana turunan dari $\\sin(x)$ adalah $\\cos(x)$."
   }
 ];
 
@@ -48,8 +53,6 @@ function showPage(pageName) {
         showAuthModal();
         if (typeof showInfoMessage === 'function') {
           showInfoMessage('Silakan masuk terlebih dahulu untuk mengakses quiz');
-        } else {
-          alert('Silakan masuk terlebih dahulu untuk mengakses quiz');
         }
       }
       return;
@@ -65,16 +68,8 @@ function showPage(pageName) {
   if (selectedPage) selectedPage.classList.add('active');
 
   // Mulai quiz otomatis saat masuk halaman quiz (jika belum mulai/selesai)
-  if (pageName === 'quiz') {
-    if (!quizInProgress && !quizCompleted) {
-      initializeQuiz();
-    } else {
-      // Pastikan info total pertanyaan dan skor selalu sync
-      const totalSpan = document.getElementById('total-questions');
-      if (totalSpan) totalSpan.textContent = quizData.length;
-      const scoreSpan = document.getElementById('score');
-      if (scoreSpan) scoreSpan.textContent = score;
-    }
+  if (pageName === 'quiz' && !quizInProgress && !quizCompleted) {
+    initializeQuiz();
   }
 
   // Track section view
@@ -124,7 +119,6 @@ function scrollToSection(sectionId) {
 function initializeQuiz() {
   if (typeof currentUser === 'undefined' || !currentUser) {
     if (typeof showAuthModal === 'function') showAuthModal();
-    else alert('Silakan masuk terlebih dahulu');
     return;
   }
 
@@ -138,11 +132,7 @@ function initializeQuiz() {
 
   document.getElementById("quiz-container").style.display = "block";
   document.getElementById("result-container").style.display = "none";
-
-  // Set total pertanyaan di header quiz
-  const totalSpan = document.getElementById('total-questions');
-  if (totalSpan) totalSpan.textContent = quizData.length;
-
+  
   updateNavigationLock(true);
   loadQuestion();
 }
@@ -159,7 +149,7 @@ function loadQuestion() {
   if (currentQuestionIndex >= quizData.length) return;
 
   const currentQuestion = quizData[currentQuestionIndex];
-
+  
   // Update header quiz (nomor & total)
   const qNum = document.getElementById("question-number");
   if (qNum) qNum.textContent = currentQuestionIndex + 1;
@@ -175,10 +165,7 @@ function loadQuestion() {
   currentQuestion.options.forEach((option, index) => {
     const optionElement = document.createElement("div");
     optionElement.className = "option";
-    optionElement.innerHTML = `
-      <input type="radio" id="option${index}" name="quiz-option" value="${index}">
-      <label for="option${index}">${option}</label>
-    `;
+    optionElement.innerHTML = `<input type="radio" id="option${index}" name="quiz-option" value="${index}"><label for="option${index}">${option}</label>`;
     optionElement.addEventListener("click", () => selectAnswer(index));
     optionsContainer.appendChild(optionElement);
   });
@@ -199,14 +186,8 @@ function loadQuestion() {
   const submitBtn = document.getElementById("submit-btn");
 
   if (prevBtn) prevBtn.disabled = currentQuestionIndex === 0;
-
-  if (currentQuestionIndex === quizData.length - 1) {
-    if (nextBtn) nextBtn.style.display = "none";
-    if (submitBtn) submitBtn.style.display = "inline-block";
-  } else {
-    if (nextBtn) nextBtn.style.display = "inline-block";
-    if (submitBtn) submitBtn.style.display = "none";
-  }
+  if (nextBtn) nextBtn.style.display = currentQuestionIndex === quizData.length - 1 ? "none" : "inline-block";
+  if (submitBtn) submitBtn.style.display = currentQuestionIndex === quizData.length - 1 ? "inline-block" : "none";
 
   // Render ulang MathJax
   if (typeof MathJax !== 'undefined') {
@@ -220,13 +201,9 @@ function nextQuestion() {
     alert("Silakan pilih jawaban terlebih dahulu!");
     return;
   }
-
-  const currentQuestion = quizData[currentQuestionIndex];
-  const selectedAnswer = userAnswers[currentQuestionIndex];
-  if (selectedAnswer === currentQuestion.correct) {
-    // Tambah skor hanya sekali untuk pertanyaan ini
-    // Agar tidak double, kita hitung ulang saja
-    recalcScore();
+  
+  if (userAnswers[currentQuestionIndex] === quizData[currentQuestionIndex].correct) {
+    score++;
   }
 
   currentQuestionIndex++;
@@ -240,6 +217,11 @@ function nextQuestion() {
 // Tombol "Sebelumnya" (opsional)
 function previousQuestion() {
   if (currentQuestionIndex === 0) return;
+  
+  if (userAnswers[currentQuestionIndex - 1] === quizData[currentQuestionIndex - 1].correct) {
+    score--;
+  }
+  
   currentQuestionIndex--;
   loadQuestion();
 }
@@ -248,12 +230,14 @@ function previousQuestion() {
 function selectAnswer(selectedIndex) {
   const options = document.querySelectorAll('.option');
   options.forEach((option, index) => {
-    option.classList.toggle('selected', index === selectedIndex);
+    option.classList.remove('selected');
+    if (index === selectedIndex) {
+      option.classList.add('selected');
+    }
   });
-
   const radioButton = document.getElementById(`option${selectedIndex}`);
-  if (radioButton) radioButton.checked = true;
-
+  if(radioButton) radioButton.checked = true;
+  
   userAnswers[currentQuestionIndex] = selectedIndex;
   questionAnswered = true;
 }
@@ -264,8 +248,9 @@ function submitQuiz() {
     alert("Silakan pilih jawaban terlebih dahulu!");
     return;
   }
-  // Pastikan skor final akurat
-  recalcScore();
+  if (userAnswers[currentQuestionIndex] === quizData[currentQuestionIndex].correct) {
+    score++;
+  }
   showResults();
 }
 
@@ -280,22 +265,12 @@ function showResults() {
 
   // Determine grade
   const gradeElement = document.getElementById("grade");
-  let gradeText = "";
-  let gradeClass = "";
+  let gradeText = "", gradeClass = "";
 
-  if (percentage >= 90) {
-    gradeText = "Wow! Kamu Jago Banget! 🌟";
-    gradeClass = "excellent";
-  } else if (percentage >= 80) {
-    gradeText = "Keren! Udah Paham Nih! 👍";
-    gradeClass = "good";
-  } else if (percentage >= 60) {
-    gradeText = "Lumayan! Belajar Lagi Ya 📚";
-    gradeClass = "average";
-  } else {
-    gradeText = "Gapapa, Practice Makes Perfect! 💪";
-    gradeClass = "poor";
-  }
+  if (percentage >= 90) { gradeText = "Wow! Kamu Jago Banget! 🌟"; gradeClass = "excellent"; } 
+  else if (percentage >= 80) { gradeText = "Keren! Udah Paham Nih! 👍"; gradeClass = "good"; } 
+  else if (percentage >= 60) { gradeText = "Lumayan! Belajar Lagi Ya 📚"; gradeClass = "average"; } 
+  else { gradeText = "Gapapa, Practice Makes Perfect! 💪"; gradeClass = "poor"; }
 
   gradeElement.textContent = gradeText;
   gradeElement.className = `grade ${gradeClass}`;
@@ -310,20 +285,18 @@ function showResults() {
 
   // Track quiz attempt for authenticated users
   if (typeof currentUser !== 'undefined' && currentUser && typeof trackQuizAttempt === 'function') {
-    const quizAttemptData = {
+    trackQuizAttempt({
       score: score,
       total: quizData.length,
       percentage: percentage,
-      timeSpent: Math.round(timeSpent / 1000), // in seconds
+      timeSpent: Math.round(timeSpent / 1000),
       answers: userAnswers.map((answer, index) => ({
         questionIndex: index,
         userAnswer: answer,
         correctAnswer: quizData[index].correct,
         isCorrect: answer === quizData[index].correct
       }))
-    };
-    
-    trackQuizAttempt(quizAttemptData);
+    });
   }
 }
 
@@ -347,11 +320,9 @@ function updateNavigationLock(locked) {
   const navLinks = document.querySelectorAll('.nav-link');
   navLinks.forEach(link => {
     if (locked) {
-      link.style.pointerEvents = 'none';
-      link.style.opacity = '0.5';
+      link.classList.add('disabled');
     } else {
-      link.style.pointerEvents = 'auto';
-      link.style.opacity = '1';
+      link.classList.remove('disabled');
     }
   });
 }
