@@ -1,0 +1,26 @@
+{
+  "nextId": 2,
+  "users": [
+    {
+      "_id": 1,
+      "name": "Test",
+      "email": "test123@gmail.com",
+      "password": "$2a$12$FlaAXZEOFRns9.khkVO5EeUS00Sl6w6PNsVYfmSWSYOiDmmo49ZiK",
+      "isActive": true,
+      "createdAt": "2025-10-11T06:58:19.031Z",
+      "updatedAt": "2025-10-11T06:58:36.083Z",
+      "lastLogin": "2025-10-11T06:58:36.083Z",
+      "progress": {
+        "virtualLabCompleted": [],
+        "quizResults": [],
+        "totalTimeSpent": 0,
+        "lastActivity": "2025-10-11T06:58:19.031Z"
+      },
+      "statistics": {
+        "totalQuizzes": 0,
+        "averageScore": 0,
+        "completionRate": 0
+      }
+    }
+  ]
+}
