@@ -33,23 +33,38 @@ auth.onAuthStateChanged(async (user) => {
   hideLoadingOverlay();
 });
 
-// Google Sign In
+// Google Sign In dengan error handling yang lebih baik
 async function signInWithGoogle() {
   try {
     showLoadingAuth();
+    
+    // Configure Google Provider dengan domain yang benar
+    googleProvider.setCustomParameters({
+      prompt: 'select_account'
+    });
+    
     const result = await auth.signInWithPopup(googleProvider);
     
     // Check if this is a new user
     if (result.additionalUserInfo && result.additionalUserInfo.isNewUser) {
       await createUserDocument(result.user);
-      showWelcomeMessage(result.user.displayName);
+      showWelcomeMessage(result.user.displayName || result.user.email);
     }
     
     hideLoadingAuth();
+    console.log('Google sign-in successful');
   } catch (error) {
     hideLoadingAuth();
     console.error('Google sign-in error:', error);
-    showErrorMessage('Gagal masuk dengan Google: ' + error.message);
+    
+    // Handle specific error types
+    if (error.code === 'auth/popup-closed-by-user') {
+      showErrorMessage('Login dibatalkan oleh pengguna');
+    } else if (error.code === 'auth/unauthorized-domain') {
+      showErrorMessage('Domain tidak diotorisasi. Silakan hubungi administrator.');
+    } else {
+      showErrorMessage('Gagal masuk dengan Google: ' + error.message);
+    }
   }
 }
 
@@ -373,7 +388,11 @@ function showInfoMessage(message) {
 }
 
 function showErrorMessage(message) {
-  showNotification(message, 'error');
+  if (typeof showNotification === 'function') {
+    showNotification(message, 'error');
+  } else {
+    alert(message);
+  }
 }
 
 function showNotification(message, type = 'info') {
