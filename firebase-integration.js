@@ -9,21 +9,34 @@ let userProgress = {
   badges: []
 };
 
-// Authentication state observer
+// Authentication state observer - DIPERBAIKI
 auth.onAuthStateChanged(async (user) => {
+  console.log('🔐 Auth state changed:', user ? user.email : 'logged out');
   showLoadingOverlay();
   
   if (user) {
     currentUser = user;
-    console.log('User signed in:', user.displayName || user.email);
+    console.log('👤 User signed in:', user.displayName || user.email);
     
-    await loadUserData();
-    showUserProfile();
-    closeAuthModal();
-    updateUIForAuthenticatedUser();
+    // PERBAIKAN: Pastikan urutan loading yang benar
+    try {
+      await loadUserData(); // Load data dulu
+      showUserProfile(); // Baru show profile
+      closeAuthModal();
+      updateUIForAuthenticatedUser();
+      
+      // TAMBAHAN: Trigger update UI lagi setelah semua selesai
+      setTimeout(() => {
+        updateProgressDisplay();
+        console.log('🔄 Final UI update triggered');
+      }, 500);
+      
+    } catch (error) {
+      console.error('❌ Error in auth state change:', error);
+    }
   } else {
     currentUser = null;
-    console.log('User signed out');
+    console.log('👤 User signed out');
     
     hideUserProfile();
     resetUserProgress();
@@ -160,31 +173,63 @@ async function createUserDocument(user) {
   }
 }
 
-// Load user data from Firestore
+// Load user data from Firestore - DIPERBAIKI
 async function loadUserData() {
-  if (!currentUser) return;
+  if (!currentUser) {
+    console.log('❌ No current user found');
+    return;
+  }
   
   try {
+    console.log('🔄 Loading user data for:', currentUser.uid);
+    
     const userDoc = await db.collection('users').doc(currentUser.uid).get();
     
     if (userDoc.exists()) {
       const userData = userDoc.data();
-      userProgress = userData.progress || userProgress;
+      console.log('📊 Raw user data from Firestore:', userData);
+      
+      // PERBAIKAN: Load progress data dengan fallback yang lebih robust
+      if (userData.progress) {
+        userProgress = {
+          sectionsViewed: userData.progress.sectionsViewed || [],
+          quizAttempts: userData.progress.quizAttempts || [],
+          totalTimeSpent: userData.progress.totalTimeSpent || 0,
+          lastActivity: userData.progress.lastActivity || null,
+          completionPercentage: userData.progress.completionPercentage || 0,
+          badges: userData.progress.badges || []
+        };
+      } else {
+        // Jika tidak ada progress object, cek di root level (backward compatibility)
+        userProgress = {
+          sectionsViewed: userData.sectionsViewed || [],
+          quizAttempts: userData.quizAttempts || [],
+          totalTimeSpent: userData.totalTimeSpent || 0,
+          lastActivity: userData.lastActivity || null,
+          completionPercentage: userData.completionPercentage || 0,
+          badges: userData.badges || []
+        };
+      }
+      
+      console.log('✅ Loaded user progress:', userProgress);
+      console.log('📈 Completion percentage:', userProgress.completionPercentage);
       
       // Update last login
       await db.collection('users').doc(currentUser.uid).update({
         lastLogin: firebase.firestore.FieldValue.serverTimestamp()
       });
       
+      // PENTING: Update UI setelah data loaded
       updateProgressDisplay();
-      console.log('User data loaded successfully');
+      console.log('🎨 UI updated with progress');
+      
     } else {
-      // Create document if it doesn't exist
+      console.log('📄 User document does not exist, creating...');
       await createUserDocument(currentUser);
     }
   } catch (error) {
-    console.error('Error loading user data:', error);
-    showErrorMessage('Gagal memuat data pengguna');
+    console.error('❌ Error loading user data:', error);
+    showErrorMessage('Gagal memuat data pengguna: ' + error.message);
   }
 }
 
@@ -328,8 +373,31 @@ function updateProgressDisplay() {
   const progressText = document.getElementById('progress-text');
   const progressFill = document.getElementById('progress-fill');
   
-  if (progressText) progressText.textContent = `Progress: ${userProgress.completionPercentage}%`;
-  if (progressFill) progressFill.style.width = `${userProgress.completionPercentage}%`;
+  console.log('🎨 Updating progress display...'); 
+  console.log('📊 Current completion percentage:', userProgress.completionPercentage);
+  
+  if (progressText) {
+    progressText.textContent = `Progress: ${userProgress.completionPercentage}%`;
+    console.log('✅ Progress text updated');
+  } else {
+    console.log('❌ Progress text element not found');
+  }
+  
+  if (progressFill) {
+    progressFill.style.width = `${userProgress.completionPercentage}%`;
+    console.log('✅ Progress fill updated');
+  } else {
+    console.log('❌ Progress fill element not found');
+  }
+  
+  // TAMBAHAN: Update badge display jika ada
+  updateBadgeDisplay();
+}
+
+// Fungsi baru untuk update badge display
+function updateBadgeDisplay() {
+  // Ini bisa ditambahkan nanti jika ingin menampilkan badges di UI
+  console.log('🏆 User badges:', userProgress.badges);
 }
 
 function updateUIForAuthenticatedUser() {
@@ -460,7 +528,26 @@ function getErrorMessage(errorCode) {
   return errorMessages[errorCode] || 'Terjadi kesalahan yang tidak diketahui';
 }
 
+// Fungsi debug untuk manual refresh
+function manualRefreshProgress() {
+  console.log('🔄 Manual refresh triggered');
+  if (currentUser) {
+    loadUserData().then(() => {
+      updateProgressDisplay();
+      console.log('✅ Manual refresh completed');
+    });
+  }
+}
+
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
   console.log('Firebase integration initialized');
+  
+  // TAMBAHAN: Cek jika user sudah login saat page load
+  setTimeout(() => {
+    if (currentUser) {
+      console.log('🔄 User already logged in, refreshing progress display');
+      updateProgressDisplay();
+    }
+  }, 1000); // Give time for auth state to initialize
 });
