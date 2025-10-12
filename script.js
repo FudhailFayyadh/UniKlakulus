@@ -526,7 +526,6 @@ function showResults() {
     <div class="grade-display ${grade.toLowerCase()}">
       <span class="grade-letter">${grade}</span>
       <span class="grade-message">${message}</span>
-      <div class="progress-bonus">🎯 Progress +10% & Badge didapatkan!</div>
     </div>
   `;
 
