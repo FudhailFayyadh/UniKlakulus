@@ -154,6 +154,29 @@ async function registerWithEmail(event) {
   }
 }
 
+// Sign Out - DITAMBAHKAN
+async function signOut() {
+  try {
+    console.log('🚪 Signing out...');
+    
+    // Save current progress before signing out
+    if (currentUser) {
+      await saveUserProgress();
+    }
+    
+    // Sign out from Firebase
+    await auth.signOut();
+    
+    // Show success message
+    showInfoMessage('✅ Berhasil logout. Sampai jumpa lagi!');
+    
+    console.log('✅ Sign out successful');
+  } catch (error) {
+    console.error('❌ Sign out error:', error);
+    showErrorMessage('Gagal logout: ' + error.message);
+  }
+}
+
 // Create user document in Firestore - DIPERBAIKI
 async function createUserDocument(user) {
   try {
@@ -642,6 +665,20 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Start progress watcher
   startProgressWatcher();
+  
+  // Add alternative event listener for logout button
+  setTimeout(() => {
+    const logoutBtn = document.getElementById('logout-button');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('🔘 Logout button clicked via event listener');
+        signOut();
+      });
+      console.log('✅ Logout button event listener added');
+    }
+  }, 1000);
   
   // TAMBAHAN: Cek jika user sudah login saat page load
   setTimeout(() => {
