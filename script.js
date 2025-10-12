@@ -503,44 +503,34 @@ function showResults() {
   document.getElementById("max-score").textContent = quizData.length;
   document.getElementById("percentage").textContent = percentage;
 
-  // Tentukan grade dan pesan - PERBAIKAN: Progress hanya untuk >= 70%
-  let grade, message, progressAdded = false;
+  // Tentukan grade dan pesan - SEMUA QUIZ MENAMBAH PROGRESS
+  let grade, message, progressAdded = true; // Semua quiz menambah progress
   if (percentage >= 90) {
     grade = "A";
     message = "🎉 Luar biasa! Pemahaman Anda sangat baik!";
-    progressAdded = true;
   } else if (percentage >= 80) {
     grade = "B";
     message = "👏 Bagus sekali! Anda sudah memahami materi dengan baik.";
-    progressAdded = true;
   } else if (percentage >= 70) {
     grade = "C";
     message = "✅ Baik! Anda sudah memahami konsep dasarnya.";
-    progressAdded = true;
   } else if (percentage >= 60) {
     grade = "D";
-    message = "📚 Cukup, tapi masih perlu belajar lebih giat lagi.";
-    progressAdded = false; // PERBAIKAN: Explicit false untuk < 70%
+    message = "📚 Cukup, tapi tetap dapat progress dan badge!";
   } else {
     grade = "E";
-    message = "💪 Semangat! Mari belajar lagi dan coba sekali lagi.";
-    progressAdded = false; // PERBAIKAN: Explicit false untuk < 70%
-  }
-  
-  // PERBAIKAN: Double check untuk memastikan
-  if (percentage < 70) {
-    progressAdded = false;
+    message = "💪 Semangat! Anda tetap dapat progress dan badge.";
   }
 
   document.getElementById("grade").innerHTML = `
     <div class="grade-display ${grade.toLowerCase()}">
       <span class="grade-letter">${grade}</span>
       <span class="grade-message">${message}</span>
-      ${progressAdded ? '<div class="progress-bonus">🎯 Progress +10% ditambahkan!</div>' : '<div class="no-progress">❌ Nilai minimal 70% untuk menambah progress</div>'}
+      <div class="progress-bonus">🎯 Progress +10% & Badge didapatkan!</div>
     </div>
   `;
 
-  // Track quiz attempt dengan kondisi progress - PERBAIKAN
+  // Track quiz attempt - SEMUA QUIZ DAPAT PROGRESS & BADGE
   const quizResult = {
     score: score,
     totalQuestions: quizData.length,
@@ -554,15 +544,15 @@ function showResults() {
       isCorrect: userAnswers[index] === q.correct
     })),
     timestamp: new Date().toISOString(),
-    progressEligible: progressAdded && percentage >= 70 // PERBAIKAN: Double check
+    progressEligible: true // Semua quiz eligible untuk progress
   };
   
   // DEBUGGING: Log untuk memastikan logic benar
   console.log('🎯 Quiz Results:', {
     percentage: percentage,
     grade: grade,
-    progressAdded: progressAdded,
-    progressEligible: quizResult.progressEligible
+    progressAdded: true,
+    progressEligible: true
   });
 
   // Simpan hasil dan update progress jika memenuhi syarat

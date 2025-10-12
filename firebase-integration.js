@@ -321,11 +321,11 @@ function trackQuizAttempt(quizData) {
   userProgress.quizAttempts.push(attempt);
   userProgress.lastActivity = now.toISOString();
 
-  // Tambah progress jika nilai >= 70% (tanpa batasan harian)
-  if (quizData.progressEligible && quizData.percentage >= 70) {
-    console.log('🎯 Quiz berhasil! Progress ditambahkan.');
+  // Semua quiz menambah progress (tanpa batasan nilai)
+  if (quizData.progressEligible) {
+    console.log('🎯 Quiz selesai! Progress & badge ditambahkan.');
   } else {
-    console.log('📝 Quiz selesai, tapi nilai belum mencapai 70%.');
+    console.log('📝 Quiz attempt recorded.');
   }
 
   // Update completion percentage
@@ -350,20 +350,20 @@ function updateCompletionPercentage() {
   const viewedSections = [...new Set(userProgress.sectionsViewed)].length;
   const sectionProgress = (viewedSections / totalSections) * 60;
 
-  // 2. Successful quizzes (40% dari total progress)
-  const successfulQuizzes = userProgress.quizAttempts.filter(q => 
-    q.progressEligible && q.percentage >= 70
+  // 2. Quiz attempts (40% dari total progress)
+  const quizAttempts = userProgress.quizAttempts.filter(q => 
+    q.progressEligible
   );
   
-  // Setiap quiz yang berhasil (nilai >= 70%) menambah 10% progress
+  // Setiap quiz yang diselesaikan menambah 10% progress
   // Maksimal 4 quiz untuk mencapai 40% (sisanya dari section views)
   const maxQuizForProgress = 4;
-  const quizProgress = Math.min(successfulQuizzes.length, maxQuizForProgress) * 10;
+  const quizProgress = Math.min(quizAttempts.length, maxQuizForProgress) * 10;
 
   // Total completion
   userProgress.completionPercentage = Math.min(Math.round(sectionProgress + quizProgress), 100);
 
-  console.log(`📊 Progress Update: Sections(${sectionProgress}%) + Quizzes(${quizProgress}%) = ${userProgress.completionPercentage}%`);
+  console.log(`📊 Progress Update: Sections(${sectionProgress}%) + Quiz Attempts(${quizProgress}%) = ${userProgress.completionPercentage}%`);
 }
 
 // Check and award badges
@@ -388,11 +388,11 @@ function checkAndAwardBadges() {
     showBadgeNotification('🧠 Badge Baru: Pencoba Quiz!');
   }
   
-  // High score badge
-  const highScore = userProgress.quizAttempts.some(attempt => attempt.percentage >= 80);
-  if (highScore && !badges.includes('high-achiever')) {
-    badges.push('high-achiever');
-    showBadgeNotification('⭐ Badge Baru: Pencapaian Tinggi!');
+  // Achievement badge - setiap 3 quiz
+  const quizCount = userProgress.quizAttempts.length;
+  if (quizCount >= 3 && !badges.includes('quiz-master')) {
+    badges.push('quiz-master');
+    showBadgeNotification('⭐ Badge Baru: Master Quiz!');
   }
   
   userProgress.badges = badges;
