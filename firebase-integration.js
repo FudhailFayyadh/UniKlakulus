@@ -18,21 +18,20 @@ auth.onAuthStateChanged(async (user) => {
     currentUser = user;
     console.log('👤 User signed in:', user.displayName || user.email);
     
-    // PERBAIKAN: Pastikan urutan loading yang benar
     try {
-      await loadUserData(); // Load data dulu
-      showUserProfile(); // Baru show profile
+      await loadUserData();
+      showUserProfile();
       closeAuthModal();
       updateUIForAuthenticatedUser();
       
-      // TAMBAHAN: Trigger update UI lagi setelah semua selesai
-      setTimeout(() => {
-        updateProgressDisplay();
-        console.log('🔄 Final UI update triggered');
-      }, 500);
+      // Multiple UI updates dengan delay untuk memastikan data ter-load
+      setTimeout(() => updateProgressDisplay(), 100);
+      setTimeout(() => updateProgressDisplay(), 500);
+      setTimeout(() => updateProgressDisplay(), 1000);
       
     } catch (error) {
       console.error('❌ Error in auth state change:', error);
+      // HILANGKAN ERROR ALERT - hanya log di console
     }
   } else {
     currentUser = null;
@@ -46,136 +45,151 @@ auth.onAuthStateChanged(async (user) => {
   hideLoadingOverlay();
 });
 
-// Google Sign In dengan error handling yang lebih baik
+// Google Sign In dengan error handling yang lebih baik - DIPERBAIKI
 async function signInWithGoogle() {
+  showLoadingAuth();
   try {
-    showLoadingAuth();
-    
-    // Configure Google Provider dengan domain yang benar
-    googleProvider.setCustomParameters({
-      prompt: 'select_account'
-    });
-    
     const result = await auth.signInWithPopup(googleProvider);
+    const user = result.user;
+    console.log('✅ Google sign in successful:', user.email);
     
-    // Check if this is a new user
-    if (result.additionalUserInfo && result.additionalUserInfo.isNewUser) {
-      await createUserDocument(result.user);
-      showWelcomeMessage(result.user.displayName || result.user.email);
-    }
+    // User akan dihandle oleh onAuthStateChanged
     
-    hideLoadingAuth();
-    console.log('Google sign-in successful');
   } catch (error) {
-    hideLoadingAuth();
-    console.error('Google sign-in error:', error);
+    console.error('❌ Google sign in error:', error);
     
-    // Handle specific error types
-    if (error.code === 'auth/popup-closed-by-user') {
-      showErrorMessage('Login dibatalkan oleh pengguna');
-    } else if (error.code === 'auth/unauthorized-domain') {
-      showErrorMessage('Domain tidak diotorisasi. Silakan hubungi administrator.');
+    // HILANGKAN ERROR ALERT untuk unauthorized domain
+    if (error.code === 'auth/unauthorized-domain') {
+      console.error('🚨 Domain not authorized. Add localhost to Firebase Console');
+      // Tidak menampilkan alert, hanya log di console
     } else {
-      showErrorMessage('Gagal masuk dengan Google: ' + error.message);
+      // Error lain tetap ditampilkan
+      showErrorMessage('Login Google gagal: ' + (error.message || 'Silakan coba lagi'));
     }
+  } finally {
+    hideLoadingAuth();
   }
 }
 
-// Email Sign In
+// Email Sign In - DIPERBAIKI
 async function signInWithEmail(event) {
   event.preventDefault();
+  showLoadingAuth();
   
   const email = document.getElementById('login-email').value;
   const password = document.getElementById('login-password').value;
   
   try {
-    showLoadingAuth();
-    await auth.signInWithEmailAndPassword(email, password);
-    hideLoadingAuth();
+    const result = await auth.signInWithEmailAndPassword(email, password);
+    console.log('✅ Email sign in successful:', result.user.email);
+    
+    // User akan dihandle oleh onAuthStateChanged
+    
   } catch (error) {
+    console.error('❌ Email sign in error:', error);
+    
+    let errorMsg = 'Login gagal: ';
+    switch (error.code) {
+      case 'auth/user-not-found':
+        errorMsg += 'Email tidak ditemukan';
+        break;
+      case 'auth/wrong-password':
+        errorMsg += 'Password salah';
+        break;
+      case 'auth/invalid-email':
+        errorMsg += 'Format email tidak valid';
+        break;
+      default:
+        errorMsg += error.message;
+    }
+    
+    showErrorMessage(errorMsg);
+  } finally {
     hideLoadingAuth();
-    console.error('Email sign-in error:', error);
-    showErrorMessage('Gagal masuk: ' + getErrorMessage(error.code));
   }
 }
 
-// Email Registration
+// Email Registration - DIPERBAIKI
 async function registerWithEmail(event) {
   event.preventDefault();
+  showLoadingAuth();
   
   const name = document.getElementById('register-name').value;
   const email = document.getElementById('register-email').value;
   const password = document.getElementById('register-password').value;
   
   try {
-    showLoadingAuth();
+    const result = await auth.createUserWithEmailAndPassword(email, password);
     
-    // Create user account
-    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-    
-    // Update user profile with display name
-    await userCredential.user.updateProfile({
+    // Update profile dengan nama
+    await result.user.updateProfile({
       displayName: name
     });
     
-    // Create user document in Firestore
-    await createUserDocument(userCredential.user);
+    console.log('✅ Email registration successful:', result.user.email);
     
-    hideLoadingAuth();
-    showWelcomeMessage(name);
+    // User akan dihandle oleh onAuthStateChanged
+    
   } catch (error) {
+    console.error('❌ Email registration error:', error);
+    
+    let errorMsg = 'Registrasi gagal: ';
+    switch (error.code) {
+      case 'auth/email-already-in-use':
+        errorMsg += 'Email sudah terdaftar';
+        break;
+      case 'auth/weak-password':
+        errorMsg += 'Password terlalu lemah';
+        break;
+      case 'auth/invalid-email':
+        errorMsg += 'Format email tidak valid';
+        break;
+      default:
+        errorMsg += error.message;
+    }
+    
+    showErrorMessage(errorMsg);
+  } finally {
     hideLoadingAuth();
-    console.error('Registration error:', error);
-    showErrorMessage('Gagal mendaftar: ' + getErrorMessage(error.code));
   }
 }
 
-// Sign Out
-async function signOut() {
-  try {
-    // Save current progress before signing out
-    await saveUserProgress();
-    await auth.signOut();
-    showInfoMessage('Berhasil keluar. Sampai jumpa lagi!');
-  } catch (error) {
-    console.error('Sign-out error:', error);
-    showErrorMessage('Gagal keluar: ' + error.message);
-  }
-}
-
-// Create user document in Firestore
+// Create user document in Firestore - DIPERBAIKI
 async function createUserDocument(user) {
-  // Validate photoURL to prevent errors
-  let validPhotoURL = null;
-  if (user.photoURL && user.photoURL.startsWith('http')) {
-    validPhotoURL = user.photoURL;
-  }
-  
-  const userDoc = {
-    uid: user.uid,
-    email: user.email,
-    displayName: user.displayName || user.email?.split('@')[0] || 'User',
-    photoURL: validPhotoURL,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
-    progress: {
+  try {
+    const userData = {
+      email: user.email,
+      displayName: user.displayName || user.email.split('@')[0],
+      photoURL: user.photoURL && user.photoURL.startsWith('http') ? user.photoURL : null,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+      progress: {
+        sectionsViewed: [],
+        quizAttempts: [],
+        totalTimeSpent: 0,
+        lastActivity: null,
+        completionPercentage: 0,
+        badges: []
+      }
+    };
+
+    await db.collection('users').doc(user.uid).set(userData);
+    
+    // Reset progress setelah create document
+    userProgress = {
       sectionsViewed: [],
       quizAttempts: [],
       totalTimeSpent: 0,
+      lastActivity: null,
       completionPercentage: 0,
-      badges: ['welcome']
-    },
-    settings: {
-      emailNotifications: true,
-      theme: 'default'
-    }
-  };
-  
-  try {
-    await db.collection('users').doc(user.uid).set(userDoc, { merge: true });
-    console.log('User document created/updated successfully');
+      badges: []
+    };
+    
+    console.log('✅ User document created successfully');
+    updateProgressDisplay();
   } catch (error) {
-    console.error('Error creating user document:', error);
+    console.error('❌ Error creating user document:', error);
+    // HILANGKAN ERROR MESSAGE - hanya log di console
   }
 }
 
@@ -191,7 +205,8 @@ async function loadUserData() {
     
     const userDoc = await db.collection('users').doc(currentUser.uid).get();
     
-    if (userDoc.exists()) {
+    // PERBAIKAN: Ganti userDoc.exists() menjadi userDoc.exists (property, bukan method)
+    if (userDoc.exists) {
       const userData = userDoc.data();
       console.log('📊 Raw user data from Firestore:', userData);
       
@@ -225,21 +240,8 @@ async function loadUserData() {
         lastLogin: firebase.firestore.FieldValue.serverTimestamp()
       });
       
-      // PENTING: Multiple UI updates untuk memastikan ter-load
+      // PENTING: Update UI setelah data loaded
       updateProgressDisplay();
-      
-      // Force update setelah delay
-      setTimeout(() => {
-        updateProgressDisplay();
-        console.log('🔄 Delayed UI update completed');
-      }, 200);
-      
-      // Force update lagi setelah delay lebih lama
-      setTimeout(() => {
-        updateProgressDisplay();
-        console.log('🔄 Final delayed UI update completed');
-      }, 1000);
-      
       console.log('🎨 UI updated with progress');
       
     } else {
@@ -248,7 +250,7 @@ async function loadUserData() {
     }
   } catch (error) {
     console.error('❌ Error loading user data:', error);
-    showErrorMessage('Gagal memuat data pengguna: ' + error.message);
+    // HILANGKAN ERROR MESSAGE - hanya log di console
   }
 }
 
@@ -560,11 +562,24 @@ function showInfoMessage(message) {
 }
 
 function showErrorMessage(message) {
-  if (typeof showNotification === 'function') {
-    showNotification(message, 'error');
-  } else {
-    alert(message);
-  }
+  // Buat simple toast notification instead of alert
+  const toast = document.createElement('div');
+  toast.className = 'error-toast';
+  toast.innerHTML = `
+    <div class="error-content">
+      <span>❌ ${message}</span>
+      <button onclick="this.parentElement.parentElement.remove()">×</button>
+    </div>
+  `;
+  
+  document.body.appendChild(toast);
+  
+  // Auto remove after 5 seconds
+  setTimeout(() => {
+    if (toast.parentNode) {
+      toast.remove();
+    }
+  }, 5000);
 }
 
 function showNotification(message, type = 'info') {
