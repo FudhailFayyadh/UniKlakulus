@@ -503,7 +503,7 @@ function showResults() {
   document.getElementById("max-score").textContent = quizData.length;
   document.getElementById("percentage").textContent = percentage;
 
-  // Tentukan grade dan pesan
+  // Tentukan grade dan pesan - PERBAIKAN: Progress hanya untuk >= 70%
   let grade, message, progressAdded = false;
   if (percentage >= 90) {
     grade = "A";
@@ -520,9 +520,16 @@ function showResults() {
   } else if (percentage >= 60) {
     grade = "D";
     message = "📚 Cukup, tapi masih perlu belajar lebih giat lagi.";
+    progressAdded = false; // PERBAIKAN: Explicit false untuk < 70%
   } else {
     grade = "E";
     message = "💪 Semangat! Mari belajar lagi dan coba sekali lagi.";
+    progressAdded = false; // PERBAIKAN: Explicit false untuk < 70%
+  }
+  
+  // PERBAIKAN: Double check untuk memastikan
+  if (percentage < 70) {
+    progressAdded = false;
   }
 
   document.getElementById("grade").innerHTML = `
@@ -533,7 +540,7 @@ function showResults() {
     </div>
   `;
 
-  // Track quiz attempt dengan kondisi progress
+  // Track quiz attempt dengan kondisi progress - PERBAIKAN
   const quizResult = {
     score: score,
     totalQuestions: quizData.length,
@@ -547,8 +554,16 @@ function showResults() {
       isCorrect: userAnswers[index] === q.correct
     })),
     timestamp: new Date().toISOString(),
-    progressEligible: progressAdded // Flag untuk menentukan apakah quiz ini menambah progress
+    progressEligible: progressAdded && percentage >= 70 // PERBAIKAN: Double check
   };
+  
+  // DEBUGGING: Log untuk memastikan logic benar
+  console.log('🎯 Quiz Results:', {
+    percentage: percentage,
+    grade: grade,
+    progressAdded: progressAdded,
+    progressEligible: quizResult.progressEligible
+  });
 
   // Simpan hasil dan update progress jika memenuhi syarat
   if (typeof trackQuizAttempt === 'function') {

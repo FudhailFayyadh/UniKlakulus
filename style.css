@@ -1239,17 +1239,17 @@ h3 {
   transform: translateY(0);
 }
 
-/* Notification Styles */
+/* Notification Styles - Dipindah ke bawah kiri */
 .notification {
   position: fixed;
-  top: 20px;
-  right: 20px;
+  bottom: 20px;
+  left: 20px;
   padding: 1rem 1.5rem;
   border-radius: 10px;
   color: white;
   font-weight: 500;
   z-index: 10001;
-  transform: translateX(400px);
+  transform: translateX(-400px);
   opacity: 0;
   transition: all 0.3s ease;
   max-width: 350px;
@@ -1427,10 +1427,10 @@ header:hover .nav-container::after {
   opacity: 0.8;
 }
 
-/* Error Toast Notification */
+/* Error Toast Notification - Dipindah ke bawah kanan */
 .error-toast {
   position: fixed;
-  top: 20px;
+  bottom: 80px;
   right: 20px;
   background: #dc3545;
   color: white;
@@ -1438,7 +1438,7 @@ header:hover .nav-container::after {
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
   z-index: 10000;
-  animation: slideIn 0.3s ease-out;
+  animation: slideInFromRight 0.3s ease-out;
   max-width: 400px;
 }
 
@@ -1464,6 +1464,17 @@ header:hover .nav-container::after {
 }
 
 @keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromRight {
   from {
     transform: translateX(100%);
     opacity: 0;
