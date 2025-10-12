@@ -231,13 +231,14 @@ const additionalQuestions = [
 const allQuestions = [...quizBankData, ...additionalQuestions];
 
 // Variables untuk quiz
-let currentQuestion = 0;
+let currentQuestionIndex = 0; // Perbaiki nama variabel
 let score = 0;
 let userAnswers = [];
 let quizCompleted = false;
 let questionAnswered = false;
 let quizData = []; // This will hold the selected 5 random questions
-let quizInProgress = false; // New variable to track quiz state
+let quizInProgress = false;
+let quizStartTime;
 
 // Quiz data
 const QuizData = {
@@ -326,10 +327,12 @@ function initializeQuiz() {
     return;
   }
 
+  // Ambil 5 soal random dari bank soal
+  quizData = QuizData.selectRandom(5);
   quizStartTime = Date.now();
   currentQuestionIndex = 0;
   score = 0;
-  userAnswers = [];
+  userAnswers = new Array(quizData.length); // Reset jawaban pengguna
   questionAnswered = false;
   quizCompleted = false;
   quizInProgress = true;
@@ -363,6 +366,9 @@ function loadQuestion() {
   // Isi teks pertanyaan
   document.getElementById("question-text").innerHTML = currentQuestion.question;
 
+  // Sembunyikan penjelasan di awal
+  document.getElementById("explanation-container").style.display = "none";
+
   // Render opsi
   const optionsContainer = document.getElementById("options-container");
   optionsContainer.innerHTML = "";
@@ -374,9 +380,16 @@ function loadQuestion() {
     optionsContainer.appendChild(optionElement);
   });
 
+  // Nonaktifkan tombol selanjutnya sampai jawaban dipilih
+  document.getElementById('next-btn').disabled = true;
+  if (document.getElementById('submit-btn')) {
+    document.getElementById('submit-btn').disabled = true;
+  }
+
   // Tandai jika sudah pernah dijawab
   if (typeof userAnswers[currentQuestionIndex] !== 'undefined') {
-    selectAnswer(userAnswers[currentQuestionIndex]);
+    // Jika sudah dijawab, tampilkan kembali state jawaban sebelumnya
+    showAnswerFeedback(userAnswers[currentQuestionIndex]);
   } else {
     questionAnswered = false;
   }
@@ -399,15 +412,59 @@ function loadQuestion() {
   }
 }
 
+// Select answer - dengan feedback langsung
+function selectAnswer(selectedIndex) {
+  // Jangan lakukan apa-apa jika pertanyaan ini sudah dijawab
+  if (questionAnswered) return;
+
+  userAnswers[currentQuestionIndex] = selectedIndex;
+  questionAnswered = true;
+  
+  showAnswerFeedback(selectedIndex);
+}
+
+// Fungsi baru untuk menampilkan feedback jawaban
+function showAnswerFeedback(selectedIndex) {
+  const currentQ = quizData[currentQuestionIndex];
+  const options = document.querySelectorAll('.option');
+  const explanationContainer = document.getElementById("explanation-container");
+  const explanationText = document.getElementById("explanation-text");
+
+  // Nonaktifkan semua opsi setelah satu dipilih
+  options.forEach(opt => opt.style.pointerEvents = 'none');
+
+  // Tampilkan penjelasan
+  explanationText.innerHTML = currentQ.explanation;
+  explanationContainer.style.display = "block";
+
+  // Beri warna pada jawaban
+  options.forEach((option, index) => {
+    option.classList.remove('selected', 'correct', 'incorrect');
+    
+    if (index === currentQ.correct) {
+      // Jawaban yang benar selalu diberi warna hijau
+      option.classList.add('correct');
+    } else if (index === selectedIndex && selectedIndex !== currentQ.correct) {
+      // Jika pilihan pengguna salah, beri warna merah
+      option.classList.add('incorrect');
+    }
+  });
+  
+  // Update skor
+  recalcScore();
+
+  // Aktifkan tombol selanjutnya/selesai
+  document.getElementById('next-btn').disabled = false;
+  if (document.getElementById('submit-btn')) {
+    document.getElementById('submit-btn').disabled = false;
+  }
+}
+
 // Next question (dipanggil tombol "Selanjutnya")
 function nextQuestion() {
   if (!questionAnswered) {
     alert("Silakan pilih jawaban terlebih dahulu!");
     return;
-  }
-  
-  if (userAnswers[currentQuestionIndex] === quizData[currentQuestionIndex].correct) {
-    score++;
   }
 
   currentQuestionIndex++;
@@ -421,29 +478,8 @@ function nextQuestion() {
 // Tombol "Sebelumnya" (opsional)
 function previousQuestion() {
   if (currentQuestionIndex === 0) return;
-  
-  if (userAnswers[currentQuestionIndex - 1] === quizData[currentQuestionIndex - 1].correct) {
-    score--;
-  }
-  
   currentQuestionIndex--;
   loadQuestion();
-}
-
-// Select answer
-function selectAnswer(selectedIndex) {
-  const options = document.querySelectorAll('.option');
-  options.forEach((option, index) => {
-    option.classList.remove('selected');
-    if (index === selectedIndex) {
-      option.classList.add('selected');
-    }
-  });
-  const radioButton = document.getElementById(`option${selectedIndex}`);
-  if(radioButton) radioButton.checked = true;
-  
-  userAnswers[currentQuestionIndex] = selectedIndex;
-  questionAnswered = true;
 }
 
 // Submit (tombol "Selesai")
@@ -451,9 +487,6 @@ function submitQuiz() {
   if (!questionAnswered) {
     alert("Silakan pilih jawaban terlebih dahulu!");
     return;
-  }
-  if (userAnswers[currentQuestionIndex] === quizData[currentQuestionIndex].correct) {
-    score++;
   }
   showResults();
 }
@@ -517,6 +550,12 @@ function resetQuiz() {
   document.getElementById("result-container").style.display = "none";
   
   updateNavigationLock(false);
+}
+
+// Fungsi baru untuk tombol "Ulangi Quiz"
+function restartQuiz() {
+  resetQuiz();
+  initializeQuiz(); // Langsung mulai quiz baru dengan soal random
 }
 
 // Update navigation lock during quiz

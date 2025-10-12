@@ -693,13 +693,14 @@
                 <button id="prev-btn" onclick="previousQuestion()" disabled>
                   Sebelumnya
                 </button>
-                <button id="next-btn" onclick="nextQuestion()">
+                <button id="next-btn" onclick="nextQuestion()" disabled>
                   Selanjutnya
                 </button>
                 <button
                   id="submit-btn"
                   onclick="submitQuiz()"
                   style="display: none"
+                  disabled
                 >
                   Selesai
                 </button>
@@ -718,7 +719,7 @@
                   <div id="grade" class="grade"></div>
                 </div>
                 <button onclick="restartQuiz()" class="restart-btn">
-                  Ulangi Quiz
+                  🔄 Ulangi Quiz
                 </button>
               </div>
             </div>

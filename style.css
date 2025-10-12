@@ -720,9 +720,9 @@ h3 {
 }
 
 .option:hover {
-  border-color: #28a745;
+  border-color: #667eea;
   transform: translateX(8px);
-  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.15);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.15);
 }
 
 .option.selected {
@@ -736,22 +736,27 @@ h3 {
   background: #28a745 !important;
   border-color: #28a745 !important;
   color: white !important;
+  font-weight: 600 !important;
+  pointer-events: none;
 }
 
 .option.incorrect {
   background: #dc3545 !important;
   border-color: #dc3545 !important;
   color: white !important;
+  font-weight: 600 !important;
+  pointer-events: none;
 }
 
-.option.selected.correct {
-  background: #28a745 !important;
-  border-color: #28a745 !important;
+/* Tambahan untuk memastikan warna yang tepat */
+.option.correct::before {
+  content: "✓ ";
+  font-weight: bold;
 }
 
-.option.selected.incorrect {
-  background: #dc3545 !important;
-  border-color: #dc3545 !important;
+.option.incorrect::before {
+  content: "✗ ";
+  font-weight: bold;
 }
 
 /* Quiz Navigation */
