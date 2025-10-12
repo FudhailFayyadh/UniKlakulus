@@ -217,38 +217,64 @@ function trackSectionView(sectionId) {
   }
 }
 
-// Track quiz attempt
+// Track quiz attempt dengan sistem progress baru (tanpa batasan harian)
 function trackQuizAttempt(quizData) {
   if (!currentUser) return;
-  
+
+  const now = new Date();
   const attempt = {
-    timestamp: new Date().toISOString(),
-    score: quizData.score,
-    totalQuestions: quizData.total,
-    percentage: quizData.percentage,
-    timeSpent: quizData.timeSpent || 0,
-    answers: quizData.answers || []
+    ...quizData,
+    userId: currentUser.uid,
+    timestamp: now.toISOString()
   };
-  
+
+  // Tambahkan ke array quiz attempts
   userProgress.quizAttempts.push(attempt);
+  userProgress.lastActivity = now.toISOString();
+
+  // Tambah progress jika nilai >= 70% (tanpa batasan harian)
+  if (quizData.progressEligible && quizData.percentage >= 70) {
+    console.log('🎯 Quiz berhasil! Progress ditambahkan.');
+  } else {
+    console.log('📝 Quiz selesai, tapi nilai belum mencapai 70%.');
+  }
+
+  // Update completion percentage
   updateCompletionPercentage();
+  
+  // Check for new badges
+  checkAndAwardBadges();
+  
+  // Save to database
   saveUserProgress();
   
-  // Award badges based on performance
-  checkAndAwardBadges();
+  // Update UI
+  updateProgressDisplay();
 }
 
-// Update completion percentage
+// Update completion percentage dengan logika baru (tanpa batasan quiz harian)
 function updateCompletionPercentage() {
-  const sections = ['limit-section', 'derivative-section', 'integral-section'];
-  const viewedSections = userProgress.sectionsViewed.filter(s => sections.includes(s)).length;
-  const quizCompleted = userProgress.quizAttempts.length > 0;
+  if (!currentUser) return;
+
+  // 1. Section views (60% dari total progress)
+  const totalSections = 3; // limit, derivative, integral
+  const viewedSections = [...new Set(userProgress.sectionsViewed)].length;
+  const sectionProgress = (viewedSections / totalSections) * 60;
+
+  // 2. Successful quizzes (40% dari total progress)
+  const successfulQuizzes = userProgress.quizAttempts.filter(q => 
+    q.progressEligible && q.percentage >= 70
+  );
   
-  let completion = (viewedSections / sections.length) * 70; // 70% for viewing sections
-  if (quizCompleted) completion += 30; // 30% for completing quiz
-  
-  userProgress.completionPercentage = Math.min(100, Math.round(completion));
-  updateProgressDisplay();
+  // Setiap quiz yang berhasil (nilai >= 70%) menambah 10% progress
+  // Maksimal 4 quiz untuk mencapai 40% (sisanya dari section views)
+  const maxQuizForProgress = 4;
+  const quizProgress = Math.min(successfulQuizzes.length, maxQuizForProgress) * 10;
+
+  // Total completion
+  userProgress.completionPercentage = Math.min(Math.round(sectionProgress + quizProgress), 100);
+
+  console.log(`📊 Progress Update: Sections(${sectionProgress}%) + Quizzes(${quizProgress}%) = ${userProgress.completionPercentage}%`);
 }
 
 // Check and award badges

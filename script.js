@@ -493,48 +493,72 @@ function submitQuiz() {
 
 // Show final results
 function showResults() {
-  const timeSpent = Date.now() - quizStartTime || 0;
+  quizCompleted = true;
+  quizInProgress = false;
+  
   const percentage = Math.round((score / quizData.length) * 100);
+  const timeTaken = Math.round((Date.now() - quizStartTime) / 1000);
 
   document.getElementById("final-score").textContent = score;
   document.getElementById("max-score").textContent = quizData.length;
   document.getElementById("percentage").textContent = percentage;
 
-  // Determine grade
-  const gradeElement = document.getElementById("grade");
-  let gradeText = "", gradeClass = "";
+  // Tentukan grade dan pesan
+  let grade, message, progressAdded = false;
+  if (percentage >= 90) {
+    grade = "A";
+    message = "🎉 Luar biasa! Pemahaman Anda sangat baik!";
+    progressAdded = true;
+  } else if (percentage >= 80) {
+    grade = "B";
+    message = "👏 Bagus sekali! Anda sudah memahami materi dengan baik.";
+    progressAdded = true;
+  } else if (percentage >= 70) {
+    grade = "C";
+    message = "✅ Baik! Anda sudah memahami konsep dasarnya.";
+    progressAdded = true;
+  } else if (percentage >= 60) {
+    grade = "D";
+    message = "📚 Cukup, tapi masih perlu belajar lebih giat lagi.";
+  } else {
+    grade = "E";
+    message = "💪 Semangat! Mari belajar lagi dan coba sekali lagi.";
+  }
 
-  if (percentage >= 90) { gradeText = "Wow! Kamu Jago Banget! 🌟"; gradeClass = "excellent"; } 
-  else if (percentage >= 80) { gradeText = "Keren! Udah Paham Nih! 👍"; gradeClass = "good"; } 
-  else if (percentage >= 60) { gradeText = "Lumayan! Belajar Lagi Ya 📚"; gradeClass = "average"; } 
-  else { gradeText = "Gapapa, Practice Makes Perfect! 💪"; gradeClass = "poor"; }
+  document.getElementById("grade").innerHTML = `
+    <div class="grade-display ${grade.toLowerCase()}">
+      <span class="grade-letter">${grade}</span>
+      <span class="grade-message">${message}</span>
+      ${progressAdded ? '<div class="progress-bonus">🎯 Progress +10% ditambahkan!</div>' : '<div class="no-progress">❌ Nilai minimal 70% untuk menambah progress</div>'}
+    </div>
+  `;
 
-  gradeElement.textContent = gradeText;
-  gradeElement.className = `grade ${gradeClass}`;
+  // Track quiz attempt dengan kondisi progress
+  const quizResult = {
+    score: score,
+    totalQuestions: quizData.length,
+    percentage: percentage,
+    grade: grade,
+    timeTaken: timeTaken,
+    questions: quizData.map((q, index) => ({
+      question: q.question,
+      userAnswer: userAnswers[index],
+      correctAnswer: q.correct,
+      isCorrect: userAnswers[index] === q.correct
+    })),
+    timestamp: new Date().toISOString(),
+    progressEligible: progressAdded // Flag untuk menentukan apakah quiz ini menambah progress
+  };
 
-  // Hide quiz, show results
+  // Simpan hasil dan update progress jika memenuhi syarat
+  if (typeof trackQuizAttempt === 'function') {
+    trackQuizAttempt(quizResult);
+  }
+
   document.getElementById("quiz-container").style.display = "none";
   document.getElementById("result-container").style.display = "block";
-
-  quizCompleted = true;
-  quizInProgress = false;
+  
   updateNavigationLock(false);
-
-  // Track quiz attempt for authenticated users
-  if (typeof currentUser !== 'undefined' && currentUser && typeof trackQuizAttempt === 'function') {
-    trackQuizAttempt({
-      score: score,
-      total: quizData.length,
-      percentage: percentage,
-      timeSpent: Math.round(timeSpent / 1000),
-      answers: userAnswers.map((answer, index) => ({
-        questionIndex: index,
-        userAnswer: answer,
-        correctAnswer: quizData[index].correct,
-        isCorrect: answer === quizData[index].correct
-      }))
-    });
-  }
 }
 
 // Reset quiz

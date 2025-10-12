@@ -1301,3 +1301,75 @@ header:hover .nav-container::after {
     height: 200px;
   }
 }
+
+/* Grade Display Styling */
+.grade-display {
+  text-align: center;
+  padding: 20px;
+  border-radius: 12px;
+  margin: 15px 0;
+  border: 2px solid;
+}
+
+.grade-display.a {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  border-color: #28a745;
+  color: white;
+}
+
+.grade-display.b {
+  background: linear-gradient(135deg, #17a2b8, #6f42c1);
+  border-color: #17a2b8;
+  color: white;
+}
+
+.grade-display.c {
+  background: linear-gradient(135deg, #ffc107, #fd7e14);
+  border-color: #ffc107;
+  color: #212529;
+}
+
+.grade-display.d {
+  background: linear-gradient(135deg, #fd7e14, #dc3545);
+  border-color: #fd7e14;
+  color: white;
+}
+
+.grade-display.e {
+  background: linear-gradient(135deg, #dc3545, #6c757d);
+  border-color: #dc3545;
+  color: white;
+}
+
+.grade-letter {
+  font-size: 3rem;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.grade-message {
+  font-size: 1.1rem;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.progress-bonus {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-top: 10px;
+  display: inline-block;
+}
+
+.no-progress {
+  background: rgba(0, 0, 0, 0.1);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  margin-top: 10px;
+  display: inline-block;
+  opacity: 0.8;
+}
