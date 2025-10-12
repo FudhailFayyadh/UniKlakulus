@@ -145,11 +145,17 @@ async function signOut() {
 
 // Create user document in Firestore
 async function createUserDocument(user) {
+  // Validate photoURL to prevent errors
+  let validPhotoURL = null;
+  if (user.photoURL && user.photoURL.startsWith('http')) {
+    validPhotoURL = user.photoURL;
+  }
+  
   const userDoc = {
     uid: user.uid,
     email: user.email,
-    displayName: user.displayName || 'User',
-    photoURL: user.photoURL || null,
+    displayName: user.displayName || user.email?.split('@')[0] || 'User',
+    photoURL: validPhotoURL,
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
     progress: {
@@ -219,8 +225,21 @@ async function loadUserData() {
         lastLogin: firebase.firestore.FieldValue.serverTimestamp()
       });
       
-      // PENTING: Update UI setelah data loaded
+      // PENTING: Multiple UI updates untuk memastikan ter-load
       updateProgressDisplay();
+      
+      // Force update setelah delay
+      setTimeout(() => {
+        updateProgressDisplay();
+        console.log('🔄 Delayed UI update completed');
+      }, 200);
+      
+      // Force update lagi setelah delay lebih lama
+      setTimeout(() => {
+        updateProgressDisplay();
+        console.log('🔄 Final delayed UI update completed');
+      }, 1000);
+      
       console.log('🎨 UI updated with progress');
       
     } else {
@@ -358,8 +377,48 @@ function checkAndAwardBadges() {
 function showUserProfile() {
   if (!currentUser) return;
   
-  document.getElementById('user-avatar').src = currentUser.photoURL || 'https://via.placeholder.com/40x40?text=👤';
-  document.getElementById('user-name').textContent = currentUser.displayName || 'User';
+  // Function to generate avatar with user initials or default silhouette
+  function getDefaultAvatar(user) {
+    // Default silhouette avatar SVG
+    const silhouetteAvatar = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNFNUU3RUIiLz4KPGNpcmNsZSBjeD0iMjAiIGN5PSIxNiIgcj0iNiIgZmlsbD0iIzk0QTNBOCIvPgo8cGF0aCBkPSJNMzQgMzJDMzQgMjYuNDc3MiAyOS41MjI4IDIyIDI0IDIySDIwSDEyQzYuNDc3MjMgMjIgMiAyNi40NzcyIDIgMzJWMzRDMiAzNi4yMDkxIDMuNzkwODYgMzggNiAzOEgzNEMzNi4yMDkxIDM4IDM4IDM2LjIwOTEgMzggMzRWMzJaIiBmaWxsPSIjOTRBM0E4Ii8+Cjwvc3ZnPgo=';
+    
+    // Try to get initials from display name or email
+    let initials = '';
+    if (user.displayName) {
+      initials = user.displayName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+    } else if (user.email) {
+      initials = user.email.substring(0, 2).toUpperCase();
+    }
+    
+    if (initials) {
+      // Generate initials avatar
+      const initialsAvatar = `data:image/svg+xml;base64,${btoa(`
+        <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="20" cy="20" r="20" fill="#667eea"/>
+          <text x="20" y="26" text-anchor="middle" fill="white" font-family="Arial" font-size="14" font-weight="600">${initials}</text>
+        </svg>
+      `)}`;
+      return initialsAvatar;
+    }
+    
+    return silhouetteAvatar;
+  }
+  
+  const defaultAvatar = getDefaultAvatar(currentUser);
+  
+  const avatarElement = document.getElementById('user-avatar');
+  const userNameElement = document.getElementById('user-name');
+  
+  // Set avatar dengan error handling
+  avatarElement.src = currentUser.photoURL || defaultAvatar;
+  avatarElement.onerror = function() {
+    console.log('🖼️ User photo failed to load, using default avatar');
+    this.src = defaultAvatar;
+    this.onerror = null; // Prevent infinite loop
+  };
+  
+  // Set user name dengan fallback ke email
+  userNameElement.textContent = currentUser.displayName || currentUser.email || 'User';
   document.getElementById('user-profile').classList.remove('hidden');
   document.getElementById('login-btn').classList.add('hidden');
 }
@@ -370,25 +429,44 @@ function hideUserProfile() {
 }
 
 function updateProgressDisplay() {
-  const progressText = document.getElementById('progress-text');
-  const progressFill = document.getElementById('progress-fill');
-  
   console.log('🎨 Updating progress display...'); 
   console.log('📊 Current completion percentage:', userProgress.completionPercentage);
   
-  if (progressText) {
-    progressText.textContent = `Progress: ${userProgress.completionPercentage}%`;
-    console.log('✅ Progress text updated');
-  } else {
-    console.log('❌ Progress text element not found');
-  }
-  
-  if (progressFill) {
-    progressFill.style.width = `${userProgress.completionPercentage}%`;
-    console.log('✅ Progress fill updated');
-  } else {
-    console.log('❌ Progress fill element not found');
-  }
+  // Wait for DOM to be ready
+  setTimeout(() => {
+    const progressText = document.getElementById('progress-text');
+    const progressFill = document.getElementById('progress-fill');
+    
+    if (progressText) {
+      const newText = `Progress: ${userProgress.completionPercentage}%`;
+      progressText.textContent = newText;
+      progressText.innerHTML = newText; // Force refresh
+      console.log('✅ Progress text updated to:', newText);
+    } else {
+      console.log('❌ Progress text element not found');
+      // Try alternative selectors
+      const altProgressText = document.querySelector('[id="progress-text"]');
+      if (altProgressText) {
+        altProgressText.textContent = `Progress: ${userProgress.completionPercentage}%`;
+        console.log('✅ Progress text updated via alternative selector');
+      }
+    }
+    
+    if (progressFill) {
+      const newWidth = `${userProgress.completionPercentage}%`;
+      progressFill.style.width = newWidth;
+      progressFill.style.setProperty('width', newWidth, 'important'); // Force important
+      console.log('✅ Progress fill updated to:', newWidth);
+    } else {
+      console.log('❌ Progress fill element not found');
+      // Try alternative selectors
+      const altProgressFill = document.querySelector('[id="progress-fill"]');
+      if (altProgressFill) {
+        altProgressFill.style.width = `${userProgress.completionPercentage}%`;
+        console.log('✅ Progress fill updated via alternative selector');
+      }
+    }
+  }, 10);
   
   // TAMBAHAN: Update badge display jika ada
   updateBadgeDisplay();
@@ -528,20 +606,27 @@ function getErrorMessage(errorCode) {
   return errorMessages[errorCode] || 'Terjadi kesalahan yang tidak diketahui';
 }
 
-// Fungsi debug untuk manual refresh
-function manualRefreshProgress() {
-  console.log('🔄 Manual refresh triggered');
-  if (currentUser) {
-    loadUserData().then(() => {
-      updateProgressDisplay();
-      console.log('✅ Manual refresh completed');
-    });
-  }
+// Fungsi untuk force update progress setiap beberapa detik jika user login
+function startProgressWatcher() {
+  setInterval(() => {
+    if (currentUser && userProgress.completionPercentage > 0) {
+      const progressText = document.getElementById('progress-text');
+      const progressFill = document.getElementById('progress-fill');
+      
+      if (progressText && progressText.textContent === 'Progress: 0%') {
+        console.log('🔄 Progress stuck at 0%, forcing update...');
+        updateProgressDisplay();
+      }
+    }
+  }, 2000); // Check every 2 seconds
 }
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
   console.log('Firebase integration initialized');
+  
+  // Start progress watcher
+  startProgressWatcher();
   
   // TAMBAHAN: Cek jika user sudah login saat page load
   setTimeout(() => {
@@ -550,4 +635,24 @@ document.addEventListener('DOMContentLoaded', function() {
       updateProgressDisplay();
     }
   }, 1000); // Give time for auth state to initialize
+  
+  // Force check DOM elements periodically
+  setInterval(() => {
+    if (currentUser && userProgress.completionPercentage > 0) {
+      const progressText = document.getElementById('progress-text');
+      if (!progressText) {
+        console.log('⚠️ Progress elements missing, UI might need refresh');
+      }
+    }
+  }, 5000);
+  
+  // Update progress when page becomes visible again
+  document.addEventListener('visibilitychange', function() {
+    if (!document.hidden && currentUser) {
+      setTimeout(() => {
+        console.log('🔄 Page visible again, updating progress');
+        updateProgressDisplay();
+      }, 500);
+    }
+  });
 });

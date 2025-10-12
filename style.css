@@ -1152,6 +1152,19 @@ h3 {
   height: 40px;
   border-radius: 50%;
   border: 2px solid rgba(255, 255, 255, 0.3);
+  object-fit: cover;
+  background-color: #E5E7EB;
+  transition: all 0.3s ease;
+}
+
+.user-avatar:hover {
+  transform: scale(1.05);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+/* Fallback styling untuk default avatar */
+.user-avatar[src*="data:image/svg"] {
+  background-color: transparent;
 }
 
 .user-info {
