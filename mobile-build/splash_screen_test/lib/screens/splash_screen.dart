@@ -1,4 +1,4 @@
-import 'package:UniKalkulus/screens/home_page.dart';
+import 'package:unikalkulus/screens/home_page.dart';
 import 'package:flutter/material.dart';
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -20,7 +20,7 @@ class _SplashScreenState extends State<SplashScreen> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => const MyHomePage(title: 'Flutter Demo Home Page'),
+          builder: (context) => const MyHomePage(title: 'UniKalkulus'),
         ),
       );
     }
