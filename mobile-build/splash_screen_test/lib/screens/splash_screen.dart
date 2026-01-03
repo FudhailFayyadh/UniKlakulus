@@ -45,7 +45,7 @@ class _SplashScreenState extends State<SplashScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset(
-              'assets/image/UniKalkulus.jpg',
+              'assets/image/icon-unikalkulus.jpg',
               width: 100,
               height: 100),
               const Text(
