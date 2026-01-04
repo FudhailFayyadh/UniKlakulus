@@ -1,0 +1,51 @@
+name: Build and Release Android APK
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      
+      - name: Get Flutter dependencies
+        working-directory: mobile-build/splash_screen_test
+        run: flutter pub get
+      
+      - name: Build release APK
+        working-directory: mobile-build/splash_screen_test
+        run: flutter build apk --release
+      
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: UniKalkulus-release.apk
+          path: mobile-build/splash_screen_test/build/app/outputs/flutter-apk/app-release.apk
+      
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: mobile-build/splash_screen_test/build/app/outputs/flutter-apk/app-release.apk
+          name: ${{ github.ref_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
