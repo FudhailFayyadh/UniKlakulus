@@ -12,6 +12,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     
+    permissions:
+      contents: write
+    
     env:
       APK_PATH: mobile-build/splash_screen_test/build/app/outputs/flutter-apk/app-release.apk
     
