@@ -12,6 +12,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     
+    env:
+      APK_PATH: mobile-build/splash_screen_test/build/app/outputs/flutter-apk/app-release.apk
+    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -39,13 +42,13 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: UniKalkulus-release.apk
-          path: mobile-build/splash_screen_test/build/app/outputs/flutter-apk/app-release.apk
+          path: ${{ env.APK_PATH }}
       
       - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v1
         with:
-          files: mobile-build/splash_screen_test/build/app/outputs/flutter-apk/app-release.apk
+          files: ${{ env.APK_PATH }}
           name: ${{ github.ref_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
