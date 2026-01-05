@@ -63,10 +63,29 @@ export default function Quiz() {
     // Save quiz result to Firestore if user is logged in
     if (user) {
       try {
+        console.log('🔍 DEBUG - User Info:');
+        console.log('User UID:', user.uid);
+        console.log('User Email:', user.email);
+        console.log('User Display Name:', user.displayName);
+        
+        // Get the ID token to check authentication
+        const idToken = await user.getIdToken();
+        console.log('🔑 ID Token (first 50 chars):', idToken.substring(0, 50));
+        
+        // Decode token to check claims
+        const idTokenResult = await user.getIdTokenResult();
+        console.log('🎫 Token Claims:', idTokenResult.claims);
+        console.log('🕐 Token Expiration:', new Date(idTokenResult.expirationTime));
+        console.log('🕐 Current Time:', new Date());
+        
         const userRef = doc(db, 'users', user.uid);
+        console.log('📍 Firestore Path:', `users/${user.uid}`);
+        
         const userDoc = await getDoc(userRef);
+        console.log('📄 User document exists:', userDoc.exists());
 
         if (userDoc.exists()) {
+          console.log('💾 Attempting to save quiz result...');
           await updateDoc(userRef, {
             'progress.quizAttempts': arrayUnion({
               score: finalScore,
@@ -75,12 +94,37 @@ export default function Quiz() {
               date: new Date().toISOString(),
             }),
           });
+          console.log('✅ Quiz result saved successfully!');
+        } else {
+          console.log('❌ User document does not exist, creating...');
+          await setDoc(userRef, {
+            name: user.displayName || user.email,
+            email: user.email,
+            createdAt: new Date().toISOString(),
+            progress: {
+              sectionsViewed: [],
+              quizAttempts: [{
+                score: finalScore,
+                total: quizData.length,
+                percentage: percentage,
+                date: new Date().toISOString(),
+              }],
+              totalTimeSpent: 0,
+              completionPercentage: 0,
+              badges: [],
+            },
+          });
+          console.log('✅ User document created with quiz result!');
         }
       } catch (error) {
-        console.error('Error saving quiz result:', error);
+        console.error('❌ Error saving quiz result:', error);
+        console.error('Error code:', error.code);
+        console.error('Error message:', error.message);
         // Note: Quiz score is shown but not saved to history
         // Check FIRESTORE_RULES.md to configure database permissions
       }
+    } else {
+      console.log('⚠️ No user logged in, skipping save');
     }
   };
 
