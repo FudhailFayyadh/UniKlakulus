@@ -140,7 +140,7 @@ export default function Quiz() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#2196F3" />
+        <ActivityIndicator size="large" color="#201b2e" />
       </View>
     );
   }
@@ -308,7 +308,7 @@ const styles = StyleSheet.create({
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#2196F3',
+    backgroundColor: '#201b2e',
   },
   questionContainer: {
     backgroundColor: '#fff',
@@ -371,7 +371,7 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   nextButton: {
-    backgroundColor: '#2196F3',
+    backgroundColor: '#201b2e',
     margin: 16,
     padding: 16,
     borderRadius: 12,
@@ -396,7 +396,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   loginPromptButton: {
-    backgroundColor: '#2196F3',
+    backgroundColor: '#201b2e',
     paddingHorizontal: 24,
     paddingVertical: 10,
     borderRadius: 8,
@@ -424,7 +424,7 @@ const styles = StyleSheet.create({
   resultScore: {
     fontSize: 48,
     fontWeight: 'bold',
-    color: '#2196F3',
+    color: '#201b2e',
     marginBottom: 8,
   },
   resultPercentage: {
@@ -460,7 +460,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   backButtonText: {
-    color: '#2196F3',
+    color: '#201b2e',
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',

@@ -263,7 +263,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   submitButton: {
-    backgroundColor: '#2196F3',
+    backgroundColor: '#201b2e',
     padding: 16,
     borderRadius: 8,
     alignItems: 'center',
@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
   },
   switchTextBold: {
     fontWeight: 'bold',
-    color: '#2196F3',
+    color: '#201b2e',
   },
   backButton: {
     alignItems: 'center',
@@ -308,7 +308,7 @@ const styles = StyleSheet.create({
   },
   backButtonText: {
     fontSize: 16,
-    color: '#2196F3',
+    color: '#201b2e',
     fontWeight: '600',
   },
 });

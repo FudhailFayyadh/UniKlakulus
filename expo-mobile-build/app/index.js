@@ -28,7 +28,7 @@ export default function Home() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#2196F3" />
+        <ActivityIndicator size="large" color="#201b2e" />
         <Text style={styles.loadingText}>Memuat...</Text>
       </View>
     );
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   loginButton: {
-    backgroundColor: '#2196F3',
+    backgroundColor: '#201b2e',
     marginHorizontal: 24,
     padding: 16,
     borderRadius: 12,
@@ -222,7 +222,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   profileButton: {
-    backgroundColor: '#2196F3',
+    backgroundColor: '#201b2e',
     padding: 12,
     borderRadius: 8,
   },
@@ -266,13 +266,13 @@ const styles = StyleSheet.create({
   featureCardHighlight: {
     backgroundColor: '#E3F2FD',
     borderWidth: 2,
-    borderColor: '#2196F3',
+    borderColor: '#201b2e',
   },
   featureIcon: {
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: '#2196F3',
+    backgroundColor: '#201b2e',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 12,

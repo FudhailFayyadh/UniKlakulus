@@ -73,7 +73,7 @@ export default function Profile() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#2196F3" />
+        <ActivityIndicator size="large" color="#201b2e" />
       </View>
     );
   }
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8f9fa',
   },
   header: {
-    backgroundColor: '#2196F3',
+    backgroundColor: '#201b2e',
     padding: 32,
     alignItems: 'center',
   },
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
   avatarText: {
     fontSize: 48,
     fontWeight: 'bold',
-    color: '#2196F3',
+    color: '#201b2e',
   },
   name: {
     fontSize: 24,
@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
   statNumber: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#2196F3',
+    color: '#201b2e',
     marginBottom: 4,
   },
   statLabel: {

@@ -1,0 +1,178 @@
+@startuml UniKalkulus_Data_Model
+
+!define ENTITY_COLOR #2196F3
+!define VALUE_OBJECT_COLOR #FF9800
+!define SERVICE_COLOR #4CAF50
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam roundCorner 5
+skinparam packageStyle rectangle
+
+title UniKalkulus Mobile App - Data Model (ERD & UML)
+
+package "Firebase Authentication" {
+  class User <<Entity>> ENTITY_COLOR {
+    **Primary Key**
+    --
+    + uid: string {PK}
+    --
+    **Attributes**
+    --
+    + email: string
+    + displayName: string
+    + photoURL: string
+    + emailVerified: boolean
+    + createdAt: timestamp
+    + lastLoginAt: timestamp
+    --
+    **Methods**
+    --
+    + signInWithEmail(email, password): Promise<User>
+    + signInWithGoogle(): Promise<User>
+    + createAccount(email, password, name): Promise<User>
+    + signOut(): Promise<void>
+    + updateProfile(data): Promise<void>
+    + getIdToken(): Promise<string>
+  }
+}
+
+package "Firestore Database" {
+  class UserDocument <<Entity>> ENTITY_COLOR {
+    **Primary Key**
+    --
+    + userId: string {PK, FK}
+    --
+    **Attributes**
+    --
+    + name: string
+    + email: string
+    + photoURL: string
+    + createdAt: string
+    --
+    **Methods**
+    --
+    + loadUserData(uid): Promise<UserDocument>
+    + updateProgress(progress): Promise<void>
+    + addQuizAttempt(attempt): Promise<void>
+    + getQuizHistory(): QuizAttempt[]
+    + getAverageScore(): number
+  }
+
+  class Progress <<ValueObject>> VALUE_OBJECT_COLOR {
+    **Attributes**
+    --
+    + sectionsViewed: string[]
+    + quizAttempts: QuizAttempt[]
+    + totalTimeSpent: number
+    + completionPercentage: number
+    + badges: string[]
+    --
+    **Methods**
+    --
+    + addSectionViewed(section): void
+    + addQuizAttempt(attempt): void
+    + updateTimeSpent(minutes): void
+    + calculateCompletion(): number
+    + addBadge(badge): void
+  }
+
+  class QuizAttempt <<ValueObject>> VALUE_OBJECT_COLOR {
+    **Attributes**
+    --
+    + score: number
+    + total: number
+    + percentage: number
+    + date: string
+    --
+    **Methods**
+    --
+    + calculatePercentage(): number
+    + isPassing(): boolean
+    + getGrade(): string
+  }
+}
+
+package "Client-Side Data" {
+  class QuizQuestion <<Entity>> ENTITY_COLOR {
+    **Attributes**
+    --
+    + question: string
+    + options: string[4]
+    + correct: number
+    + explanation: string
+    --
+    **Methods**
+    --
+    + checkAnswer(index): boolean
+    + getExplanation(): string
+    + getCorrectAnswer(): string
+  }
+}
+
+package "Services" {
+  class AuthService <<Service>> SERVICE_COLOR {
+    **Methods**
+    --
+    + signInWithEmail(email, password): Promise<User>
+    + signInWithGoogle(): Promise<User>
+    + createAccount(email, password, name): Promise<User>
+    + signOut(): Promise<void>
+    + getCurrentUser(): User | null
+    + onAuthStateChanged(callback): Unsubscribe
+  }
+
+  class FirestoreService <<Service>> SERVICE_COLOR {
+    **Methods**
+    --
+    + getUserDocument(uid): Promise<UserDocument>
+    + createUserDocument(uid, data): Promise<void>
+    + updateUserProgress(uid, progress): Promise<void>
+    + addQuizAttempt(uid, attempt): Promise<void>
+  }
+}
+
+' Relationships
+User "1" -- "1" UserDocument : has >
+UserDocument "1" *-- "1" Progress : contains >
+Progress "1" *-- "0..*" QuizAttempt : has many >
+
+' Service relationships
+AuthService ..> User : manages >
+FirestoreService ..> UserDocument : manages >
+FirestoreService ..> Progress : updates >
+FirestoreService ..> QuizAttempt : creates >
+
+note right of User
+  **Firebase Authentication**
+  Handles user authentication
+  with Email/Password and
+  Google Sign-In OAuth
+end note
+
+note right of UserDocument
+  **Firestore Document**
+  Path: users/{userId}
+  Contains user profile
+  and learning progress
+end note
+
+note right of Progress
+  **Embedded Object**
+  Tracks user's learning
+  journey and achievements
+end note
+
+note right of QuizAttempt
+  **Embedded in Array**
+  Each quiz completion
+  is stored as an attempt
+end note
+
+note right of QuizQuestion
+  **Static Data**
+  Stored in quizData.js
+  15 calculus questions
+end note
+
+@enduml

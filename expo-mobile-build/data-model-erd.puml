@@ -1,0 +1,123 @@
+@startuml UniKalkulus_ERD
+
+' ERD Style Configuration
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundCorner 5
+
+title UniKalkulus Mobile App - Entity Relationship Diagram
+
+' Entities
+entity "USER\n(Firebase Auth)" as user {
+  * **uid** : string <<PK>>
+  --
+  email : string
+  displayName : string
+  photoURL : string
+  emailVerified : boolean
+  createdAt : timestamp
+  lastLoginAt : timestamp
+}
+
+entity "USER_DOCUMENT\n(Firestore)" as userDoc {
+  * **userId** : string <<PK, FK>>
+  --
+  name : string
+  email : string
+  photoURL : string
+  createdAt : string
+}
+
+entity "PROGRESS\n(Embedded)" as progress {
+  sectionsViewed : array<string>
+  quizAttempts : array<QuizAttempt>
+  totalTimeSpent : number
+  completionPercentage : number
+  badges : array<string>
+}
+
+entity "QUIZ_ATTEMPT\n(Embedded)" as quizAttempt {
+  score : number
+  total : number
+  percentage : number
+  date : string
+}
+
+entity "QUIZ_QUESTION\n(Static/Client)" as quizQuestion {
+  question : string
+  options : array<string>[4]
+  correct : number
+  explanation : string
+}
+
+' Relationships
+user ||--|| userDoc : "has"
+userDoc ||--|| progress : "contains"
+progress ||--o{ quizAttempt : "has many"
+
+' Notes
+note right of user
+  **Firebase Authentication**
+  
+  Managed by:
+  - Email/Password Auth
+  - Google OAuth Provider
+  
+  Authentication Methods:
+  - signInWithEmail()
+  - signInWithGoogle()
+  - createAccount()
+end note
+
+note right of userDoc
+  **Firestore Collection**
+  
+  Path: /users/{userId}
+  
+  Security Rules:
+  - User can only read/write
+    their own document
+  - Auth required
+end note
+
+note bottom of progress
+  **Nested Object**
+  
+  Tracks:
+  - Viewed learning sections
+  - All quiz attempts
+  - Total study time
+  - Overall completion %
+  - Earned badges
+end note
+
+note bottom of quizAttempt
+  **Array Element**
+  
+  Each completed quiz
+  creates a new attempt
+  record with score,
+  percentage, and timestamp
+end note
+
+note left of quizQuestion
+  **Client-Side Data**
+  
+  File: data/quizData.js
+  
+  Contains 15 questions on:
+  - Limits
+  - Derivatives
+  - Integrals
+  - Trigonometric functions
+end note
+
+legend right
+  |= Relationship |= Description |
+  | ||--|| | One to One |
+  | ||--o{ | One to Many |
+  | PK | Primary Key |
+  | FK | Foreign Key |
+endlegend
+
+@enduml

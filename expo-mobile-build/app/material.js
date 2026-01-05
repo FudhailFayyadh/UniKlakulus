@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8f9fa',
   },
   header: {
-    backgroundColor: '#2196F3',
+    backgroundColor: '#201b2e',
     padding: 24,
     alignItems: 'center',
   },
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
   icon: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#2196F3',
+    color: '#201b2e',
   },
   title: {
     fontSize: 28,
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
   navButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#2196F3',
+    color: '#201b2e',
   },
   quizButton: {
     backgroundColor: '#4CAF50',
