@@ -64,6 +64,38 @@ Bagi pembilang dan penyebut dengan pangkat tertinggi x.`,
   derivative: {
     title: 'Turunan & Diferensiasi',
     icon: 'd/dx',
+    videos: [
+      {
+        title: 'Video Pembelajaran Turunan Part 1',
+        videoId: 'InBfYmE_g_o',
+        credit: 'TPB Santuy',
+        channelUrl: 'https://www.youtube.com/@tpbsantuy',
+      },
+      {
+        title: 'Video Pembelajaran Turunan Part 2',
+        videoId: '-X0KC2r7eQ0',
+        credit: 'TPB Santuy',
+        channelUrl: 'https://www.youtube.com/@tpbsantuy',
+      },
+      {
+        title: 'Video Pembelajaran Turunan Part 3',
+        videoId: 'QeR8TqIGG64',
+        credit: 'TPB Santuy',
+        channelUrl: 'https://www.youtube.com/@tpbsantuy',
+      },
+      {
+        title: 'Video Pembelajaran Turunan Part 4',
+        videoId: 'JXc_CA2tuPA',
+        credit: 'TPB Santuy',
+        channelUrl: 'https://www.youtube.com/@tpbsantuy',
+      },
+      {
+        title: 'Video Pembelajaran Turunan Part 5',
+        videoId: '6idN0oRflRw',
+        credit: 'TPB Santuy',
+        channelUrl: 'https://www.youtube.com/@tpbsantuy',
+      },
+    ],
     sections: [
       {
         subtitle: 'Definisi Turunan',
@@ -100,6 +132,38 @@ d/dx(cot x) = -csc² x`,
   integral: {
     title: 'Integral & Antiturunan',
     icon: '∫',
+    videos: [
+      {
+        title: 'Video Pembelajaran Integral Part 1',
+        videoId: 'Aj3qM5UsWAM',
+        credit: 'TPB Santuy',
+        channelUrl: 'https://www.youtube.com/@tpbsantuy',
+      },
+      {
+        title: 'Video Pembelajaran Integral Part 2',
+        videoId: 'ZIhtM6fwoGw',
+        credit: 'TPB Santuy',
+        channelUrl: 'https://www.youtube.com/@tpbsantuy',
+      },
+      {
+        title: 'Video Pembelajaran Integral Part 3',
+        videoId: 'unvg41k9G0Y',
+        credit: 'TPB Santuy',
+        channelUrl: 'https://www.youtube.com/@tpbsantuy',
+      },
+      {
+        title: 'Video Pembelajaran Integral Part 4',
+        videoId: '6aumweXEWRs',
+        credit: 'TPB Santuy',
+        channelUrl: 'https://www.youtube.com/@tpbsantuy',
+      },
+      {
+        title: 'Video Pembelajaran Integral Part 5',
+        videoId: 'RtwecqeufhU',
+        credit: 'TPB Santuy',
+        channelUrl: 'https://www.youtube.com/@tpbsantuy',
+      },
+    ],
     sections: [
       {
         subtitle: 'Integral Tak Tentu',
