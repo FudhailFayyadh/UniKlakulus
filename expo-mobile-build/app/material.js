@@ -1,17 +1,39 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Dimensions,
 } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
+import { WebView } from 'react-native-webview';
 
 const materialContent = {
   limit: {
     title: 'Konsep Limit',
     icon: 'lim',
+    videos: [
+      {
+        title: 'Video Pembelajaran Limit Part 1',
+        videoId: 'Da98JQ9EYP8',
+        credit: 'TPB Santuy',
+        channelUrl: 'https://www.youtube.com/@tpbsantuy',
+      },
+      {
+        title: 'Video Pembelajaran Limit Part 2',
+        videoId: 'Tyl_q08WFFs',
+        credit: 'TPB Santuy',
+        channelUrl: 'https://www.youtube.com/@tpbsantuy',
+      },
+      {
+        title: 'Video Pembelajaran Limit Part 3',
+        videoId: 'TzYhPTtx_Gs',
+        credit: 'TPB Santuy',
+        channelUrl: 'https://www.youtube.com/@tpbsantuy',
+      },
+    ],
     sections: [
       {
         subtitle: 'Pengertian Limit',
@@ -117,6 +139,7 @@ export default function Material() {
   const params = useLocalSearchParams();
   const section = params.section || 'limit';
   const content = materialContent[section] || materialContent.limit;
+  const [expandedVideo, setExpandedVideo] = useState(null);
 
   return (
     <ScrollView style={styles.container}>
@@ -126,6 +149,43 @@ export default function Material() {
         </View>
         <Text style={styles.title}>{content.title}</Text>
       </View>
+
+      {/* Video Section */}
+      {content.videos && content.videos.length > 0 && (
+        <View style={styles.videosSection}>
+          <Text style={styles.videosTitle}>📹 Video Pembelajaran</Text>
+          {content.videos.map((video, index) => (
+            <View key={index} style={styles.videoItem}>
+              <TouchableOpacity
+                style={styles.videoHeader}
+                onPress={() => setExpandedVideo(expandedVideo === index ? null : index)}
+              >
+                <Text style={styles.videoTitle}>{video.title}</Text>
+                <Text style={styles.videoToggle}>
+                  {expandedVideo === index ? '▼' : '▶'}
+                </Text>
+              </TouchableOpacity>
+              
+              {expandedVideo === index && (
+                <View style={styles.videoContainer}>
+                  <WebView
+                    style={styles.video}
+                    source={{
+                      uri: `https://www.youtube.com/embed/${video.videoId}`,
+                    }}
+                    allowsFullscreenVideo
+                    javaScriptEnabled
+                  />
+                  <Text style={styles.videoCredit}>
+                    Video pembelajaran dari{' '}
+                    <Text style={styles.channelLink}>{video.credit}</Text>
+                  </Text>
+                </View>
+              )}
+            </View>
+          ))}
+        </View>
+      )}
 
       {content.sections.map((item, index) => (
         <View key={index} style={styles.section}>
@@ -257,5 +317,63 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: '#fff',
+  },
+  videosSection: {
+    margin: 16,
+    marginTop: 8,
+  },
+  videosTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#000',
+    marginBottom: 12,
+  },
+  videoItem: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    marginBottom: 12,
+    overflow: 'hidden',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+  },
+  videoHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    backgroundColor: '#f8f9fa',
+  },
+  videoTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#000',
+    flex: 1,
+  },
+  videoToggle: {
+    fontSize: 16,
+    color: '#201b2e',
+    marginLeft: 8,
+  },
+  videoContainer: {
+    padding: 16,
+  },
+  video: {
+    width: '100%',
+    height: 220,
+    backgroundColor: '#000',
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  videoCredit: {
+    fontSize: 12,
+    color: '#666',
+    textAlign: 'center',
+  },
+  channelLink: {
+    color: '#201b2e',
+    fontWeight: '600',
   },
 });
